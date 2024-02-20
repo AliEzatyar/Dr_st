@@ -1,0 +1,30 @@
+{% load static %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        {% block style %}
+
+        {% endblock %}
+
+    </style>
+    <title>خانه|{% block title %}{% endblock %}</title>
+    {% block head %}{% endblock %}
+</head>
+<body>
+<div id="headeer">
+    <span class="store_name">
+        ادویه فروشی احمدیار
+    </span>
+    <div class="user">
+        {% if request.user.is_authenticated %}
+            Welcome, {{ request.user }}
+            <br>
+            <a class="logout" href="{% url 'a_ccount:log_out' %}">خارج شدن</a>
+        {% endif %}
+
+    </div>
+</div>
+<hr>
+{% block content %}
+{% endblock %}
+</body>

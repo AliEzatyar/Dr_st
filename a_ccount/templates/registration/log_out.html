@@ -1,0 +1,9 @@
+{% extends 'main__/base.html' %}
+{% block title %}خروح
+{% endblock %}
+{% block content %}
+    <h2 style="text-align: center;"> شما از سیستم خارج شدید</h2>
+    <span style="position: fixed;left: 48%;background-color: darkcyan;border-radius: 20px;zoom: 130%">
+    <a href="{% url 'a_ccount:login_user' %}">ورود دوباره</a>
+</span>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'main__/base.html' %}
+{% load static %}
+{% block style %}
+    body{
+    text-align:center;
+    }
+
+{% endblock %}
+{% block title %}ورود{% endblock %}
+{% block content %}
+<h1>خوش آمدید</h1>
+<h2>لطفا وارد شوید</h2>
+<form style="zoom: 150%" method="post">
+    {{ logForm.as_p }}
+    <span style="color: red;">{{ errors.message }}</span>
+    <br style="margin-top: 10px">
+    {% csrf_token %}
+    <input style="margin-top: 10px;" type="submit" value="وارد شدن">
+    <input type="hidden" name="next" value="{{ request.GET.next }}">
+</form>
+{% endblock %}
