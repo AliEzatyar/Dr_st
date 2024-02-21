@@ -1,0 +1,74 @@
+{% extends 'main__/base.html' %}
+{% block title %}خرید{% endblock %}
+{% block content %}
+    <div id="buy">
+        <h1 id="buy_title">Buying a drug</h1>
+        <h3>Please fill the following form for details</h3>
+        <form id='forma' enctype="multipart/form-data" method="post" action="{% url 'main:buy' %}">
+            {% csrf_token %}
+            <div id="form-row">
+                <div id="pair">
+                    <label>
+                        Name:
+                    </label>
+                    {{ form.name }}
+                </div>
+                <div id="pair">
+                    <label>
+                        Amount:
+                    </label>
+                    {{ form.amount }}
+                </div>
+            </div>
+            <br>
+            <div id="form-row">
+                <div id="pair">
+                    <label>
+                        Price:
+                    </label>
+                    {{ form.bg_price }}
+                </div>
+                <div id="pair">
+                    <label>
+                        Company:
+                    </label>
+                    {{ form.company }}
+                </div>
+            </div>
+            <br>
+            <div id="form-row">
+                <div id="pair">
+                    <label>
+                        Date:
+                    </label>
+                    {{ form.bg_date }}
+                </div>
+                <div id="pair">
+                    <label>
+                        Photo:
+                    </label>
+                    {{ form.photo }}
+                </div>
+            </div>
+            <br>
+            <div id="form-row">
+                <div id="pair">
+                    <label>
+                        Bill:
+                    </label>
+                    {{ form.bgt_bill }}
+                </div>
+                <div id="pair">
+                    <label >
+                        Currency:
+                    </label>
+                    {{ form.currency }}
+                </div>
+            </div>
+            <br>
+            <div id="form-row">
+                <input id="pair" type="submit" value="Save">
+            </div>
+        </form>
+    </div>
+{% endblock %}

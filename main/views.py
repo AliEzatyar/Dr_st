@@ -1,4 +1,6 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.shortcuts import render
 
@@ -18,16 +20,29 @@ def main(request):
 
 @login_required
 def buy(request):
+    print("we are in buy view")
     if request.method == 'POST':
         data = request.POST
-        form = BgtForm(data)
+        form = BgtForm(data, request.FILES)
         if form.is_valid():
-            bgt = form.save()
-            drug = Drug.objects.get_or_create(name=bgt.name, company=bgt.comapny)
-            drug.existing_amount += bgt.amount
-            drug.photo = bgt.photo
-            drug.save()
-            return HttpResponse('success')
+            bgt = form.save(commit=False)
+            try:
+                drug = Drug.objects.get(name=bgt.name, company=bgt.comapny)
+                bgt.drug = drug
+                drug.existing_amount += bgt.amount  # though we can get it by calling
+                bgt.save()
+                drug.save()
+            except Drug.DoesNotExist:
+                drug = Drug.objects.create(name=bgt.name, company=bgt.comapny)
+                drug.photo = bgt.photo
+                bgt.drug = drug
+                drug.existing_amount += bgt.amount  # though we can get it by calling
+                bgt.save()
+                drug.save()
+
+            messages.success(request, 'Saving was successful')
+            return render(request,'buy/bgt.html',{'form':BgtForm()})
     else:
-        form = BgtForm(request.GET)
-    return HttpResponse('started')
+        form = BgtForm()
+    print('we are rendering', form.data)
+    return render(request, 'buy/bgt.html', {'form': form})

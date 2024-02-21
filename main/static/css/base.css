@@ -1,4 +1,5 @@
 #headeer {
+    border-radius: 20px;
     padding: 10px 100px;
     height: 10%;
     font-size: 20px;
@@ -18,4 +19,46 @@
     left: 40%;
     font-size: 50px;
     color: darkslateblue;
+}
+
+#buy {
+    position: fixed;
+    left: 40%;
+
+}
+
+#buy_title {
+    zoom: 150%;
+    border: 2px solid gray;
+    background-color: gray;
+    border-radius: 20px;
+}
+
+#buy #forma{
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    grid-gap: 5px;
+}
+#form-row {
+    display: grid;
+    grid-template-columns: min-content 1fr;
+    align-items: center;
+    grid-gap: 40px;
+    zoom: 130%;
+}
+
+#form-row input {
+    width: 100px;
+
+}
+
+#form-row #pair {
+    /*margin: 10px;*/
+    /*display: flex;*/
+}
+
+ul.messages {
+    margin: 10px 100px;
+    padding: 0;
+    list-style-type: none;
 }

@@ -8,8 +8,8 @@ from django.utils import timezone
 class Drug(models.Model):
     name = models.CharField(max_length=25, unique=True, primary_key=True)
     company = models.CharField(max_length=25)
-    existing_amount = models.PositiveSmallIntegerField()
-    photo = models.ImageField(null=True)
+    existing_amount = models.PositiveSmallIntegerField(default=0)
+    photo = models.ImageField(upload_to='',null=True)
     description = models.TextField(blank=True, null=True)
 
     class Meta:
@@ -26,14 +26,14 @@ class Bgt(models.Model):
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, related_name='bgts', blank=True,null=True)
     name = models.CharField(max_length=25, default='بدون نام')
     company = models.CharField(max_length=25, default='personal')
-    price = models.PositiveIntegerField()
+    bg_price = models.PositiveIntegerField()
     amount = models.PositiveSmallIntegerField()
     date = models.DateTimeField(auto_now_add=True)
     bg_date = models.DateField(default=timezone.now)
-    photo = models.ImageField(upload_to='', null=True)
+    photo = models.ImageField(upload_to='drugs', null=True,blank=True)
     bgt_bill = models.PositiveSmallIntegerField()
     unique = models.CharField(blank=True, unique=True, max_length=100)
-    currency = models.CharField(default='AFS', max_length=3, blank=True)
+    currency = models.CharField(default='AFS', max_length=3)
     sld_amount = models.PositiveSmallIntegerField(default=0, blank=True)  # this field increase in every sold
 
     class Meta:
