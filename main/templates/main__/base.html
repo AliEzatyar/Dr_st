@@ -1,13 +1,12 @@
 {% load static %}
+
 <head>
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
-    <style>
-        {% block style %}
+    {% block style %}
 
-        {% endblock %}
+    {% endblock %}
 
-    </style>
-    <title>خانه|{% block title %}{% endblock %}</title>
+    <title>{% block title %}{% endblock %}</title>
     {% block head %}{% endblock %}
 </head>
 <body>
@@ -25,6 +24,15 @@
     </div>
 </div>
 <hr>
-{% block content %}
-{% endblock %}
+<div id="contents">
+    {% block content %}
+    {% endblock %}
+</div>
 </body>
+<script>
+    document.addEventListener('DOMContentLoaded', function (e) {
+        {% block domready %}
+        {% endblock %}
+
+    })
+</script>

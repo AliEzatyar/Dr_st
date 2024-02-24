@@ -8,6 +8,13 @@
     border-bottom: 4px solid lightcyan;
 }
 
+#contents {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%)
+}
+
 #headeer .user {
     color: blue;
     float: left;
@@ -21,41 +28,6 @@
     color: darkslateblue;
 }
 
-#buy {
-    position: fixed;
-    left: 40%;
-
-}
-
-#buy_title {
-    zoom: 150%;
-    border: 2px solid gray;
-    background-color: gray;
-    border-radius: 20px;
-}
-
-#buy #forma{
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    grid-gap: 5px;
-}
-#form-row {
-    display: grid;
-    grid-template-columns: min-content 1fr;
-    align-items: center;
-    grid-gap: 40px;
-    zoom: 130%;
-}
-
-#form-row input {
-    width: 100px;
-
-}
-
-#form-row #pair {
-    /*margin: 10px;*/
-    /*display: flex;*/
-}
 
 ul.messages {
     margin: 10px 100px;

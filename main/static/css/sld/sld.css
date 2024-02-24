@@ -1,0 +1,29 @@
+#sell_form_fields{
+    direction: rtl;
+    zoom: 150%;
+    border: 2px solid black;
+    /*display: grid;*/
+    /*grid-gap: 10px;*/
+}
+.pair{
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+
+}
+.submitt{
+    width: 100px;
+    height: 30px;
+    background-color: cornflowerblue;
+    border-radius: 25px;
+    position: fixed;
+    left: 40%;
+    margin-top: 10px;
+}
+#sell_form_fields .selector.selector_option{
+    background-color: gray;
+}
+
+#sell_form_fields label{
+    background-color: gray;
+}

@@ -1,10 +1,24 @@
 {% extends 'main__/base.html' %}
+{% block domready %}
+    <!--fetching all drugs from the server-->
+{#        <script>#}
+
+    {#    console.log(document.documentElement)#}
+    <!--calculating and reseting total-->
+    document.getElementById('id_bg_price').addEventListener('keyup',function (e) {
+        var total =document.getElementById('id_total');
+        var pricee = document.getElementById('id_bg_price')
+        var amount = document.getElementById('id_amount')
+        total.value = Number(pricee.value) * Number(amount.value)
+    })
+
+{% endblock %}
 {% block title %}خرید{% endblock %}
 {% block content %}
     <div id="buy">
         <h1 id="buy_title">Buying a drug</h1>
         <h3>Please fill the following form for details</h3>
-        <form id='forma' enctype="multipart/form-data" method="post" action="{% url 'main:buy' %}">
+        <form id='forma' enctype="multipart/form-data" method="post" action="{% url 'main:bgt' %}">
             {% csrf_token %}
             <div id="form-row">
                 <div id="pair">
@@ -59,11 +73,20 @@
                     {{ form.bgt_bill }}
                 </div>
                 <div id="pair">
-                    <label >
+                    <label>
                         Currency:
                     </label>
                     {{ form.currency }}
                 </div>
+            </div>
+            <div id="form-row">
+                <div>
+                    <label>
+                        Total:
+                        {{ form.total }}
+                    </label>
+                </div>
+
             </div>
             <br>
             <div id="form-row">
