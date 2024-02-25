@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_jalali',
     'main.apps.MainConfig',
     'a_ccount.apps.ACcountConfig',
     'django.contrib.admin',

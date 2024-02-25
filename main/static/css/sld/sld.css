@@ -1,7 +1,8 @@
 #sell_form_fields{
     direction: rtl;
     zoom: 150%;
-    border: 2px solid black;
+    border: 1px solid darkturquoise;
+    border-radius: 25px;
     /*display: grid;*/
     /*grid-gap: 10px;*/
 }
@@ -19,6 +20,7 @@
     position: fixed;
     left: 40%;
     margin-top: 10px;
+
 }
 #sell_form_fields .selector.selector_option{
     background-color: gray;
@@ -26,4 +28,11 @@
 
 #sell_form_fields label{
     background-color: gray;
+}
+#sell_header{
+    margin-top: 30px;
+    background-color: gray;
+    text-align: center;
+    border:2px solid gray;
+    border-radius: 25px;
 }

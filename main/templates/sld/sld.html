@@ -1,74 +1,108 @@
 {% extends 'main__/base.html' %}
+<!DOCTYPE html>
 {% load static %}
 {% block title %}فروش دوا{% endblock %}
+{% block head %}
+{% endblock %}
+
 {% block style %}
     <link rel="stylesheet" href="{% static 'css/sld/sld.css' %}">
 {% endblock %}
 {% block domready %}
-{#    <script>#}
-        <!--fillingnameselector-->
-        var name_selector = document.getElementById('name_selector')
-        name_selector.innerHTML = `
-        <option class="selector_option"></option>
-        {% for drug in drugs %}
-            <option class="selector_option">{{ drug }}</option>
-        {% endfor %}
-        `
-        <!-- filling company selector-->
-        var company_selector = document.getElementById('company_selector')
-        name_selector.addEventListener('change', function (e) {
-            const drugName = e.target.value
+    {#                <script>#}
+    <!--fillingnameselector-->
+    var name_selector = document.getElementById('name_selector')
+    name_selector.innerHTML =`
+    <option>انتخاب دارو</option>`
+    name_selector.innerHTML +=`
+    {% for drug in drugs %}
+        <option class="selector_option">
+            {{ drug }}
+        </option>
+    {% endfor %}
+    `
+    <!-- filling company selector-->
+    var company_selector = document.getElementById('company_selector')
+    var bgts_selector = document.getElementById('bgt_selector')
+    var date = document.getElementById("sld_date")
+{#    var today = new Date()#}
+{#    formatted_date = today.toISOString().split("T")[0]#}
+{#    date.value = formatted_date;#}
+    bgts_selector.innerHTML =`
+    <option>انتخاب خرید</option>`
+    company_selector.innerHTML =`
+    <option>کمپنی دارو</option>`
+    name_selector.addEventListener('change', function (e) {
+    const drugName = e.target.value
 
-            company_selector.innerHTML = `<option></option>`
-            <!--filling company selector-->
-            const get_cmp_url = "{% url 'main:get_companies' %}"
-            fetch(get_cmp_url + "?drug_name=" + drugName).then(response => response.json()).then(list => list.forEach(company => {
-                function formatter(html, ...args) {
-                    return html.reduce((acc, curr, i) => acc + args[i - 1] + curr);
-                }
 
-                company_selector.innerHTML += formatter`
-                    <option>
-                             ${company}
-                    </option>
-                `
+    <!--filling company selector-->
+    const get_cmp_url = "{% url 'main:get_companies' %}"
+    fetch(get_cmp_url + "?drug_name=" + drugName).then(response => response.json()).then(list => list.forEach(company =>
+    {
+    function formatter(html, ...args) {
+    return html.reduce((acc, curr, i) => acc + args[i - 1] + curr);
+    }
+    company_selector.innerHTML += formatter`
+    <option>
+        ${company}
+    </option>
+    `
 
-            }))
+    }))
 
-        })
-
-        <!--filling bgts selector-->
-        company_selector.addEventListener('change', function (eventt) {
-            const selected_company = eventt.target.value
-            const selected_drug = name_selector.value
-            var bgts_selector = document.getElementById('bgt_selector')
-            bgts_selector.innerHTML = ``
-            const url = "{% url 'main:get_bgts' %}"
-            fetch(url + "?drug_name=" + selected_drug + "&" + "company=" + selected_company).then(response => response.json()).then(list => list.forEach(detail => {
-                function formatter(html, ...args) {
-                    return html.reduce((acc, curr, i) => acc + args[i - 1] + curr);
-                }
-
-                const bg_price = detail[0]
-                const baqi_amount = detail[1]
-                const bg_date = detail[2]
-                const currency = detail[3]
-                bgts_selector.innerHTML += formatter`
-                <option>
-                    ${bg_date} | ${baqi_amount} | ${currency} | ${bg_price}
-                </option>
-                `
-            }))
-        })
-
-        <!--auto total calculating-->
-        document.getElementById('id_price').addEventListener('keyup',function (e) {
-        var total =document.getElementById('id_total');
-        var pricee = document.getElementById('id_price')
-        var amount = document.getElementById('id_amount')
-        total.value = Number(pricee.value) * Number(amount.value)
     })
 
+    <!--filling bgts selector-->
+    company_selector.addEventListener('change', function (eventt) {
+    bgts_selector.innerHTML = `<option>انتخاب خرید</option>`
+    const selected_company = eventt.target.value
+    const selected_drug = name_selector.value
+    const url = "{% url 'main:get_bgts' %}"
+    fetch(url + "?drug_name=" + selected_drug + "&" + "company=" + selected_company).then(response =>
+    response.json()).then(list => list.forEach(detail => {
+    function formatter(html, ...args) {
+    return html.reduce((acc, curr, i) => acc + args[i - 1] + curr);
+    }
+
+    const bg_price = detail[0]
+    const baqi_amount = detail[1]
+    const bg_date = detail[2]
+    const currency = detail[3]
+    bgts_selector.innerHTML += formatter`
+    <option>
+        ${bg_date} | ${baqi_amount} | ${currency} | ${bg_price}
+    </option>
+    `
+    }))
+    })
+
+    <!--auto total calculating-->
+    document.getElementById('id_price').addEventListener('keyup',function (e) {
+    var total =document.getElementById('id_total');
+    var pricee = document.getElementById('id_price')
+    var amount = document.getElementById('id_amount')
+    total.value = Number(pricee.value) * Number(amount.value)
+    })
+    {% if errors %}
+        {#        console.log(`{{ form.name.value }}`)#}
+
+        {#        var name = document.getElementById('name_selector')#}
+        {#        name.innerHTML =`#}
+        {#        <option>{{ form.name.value }}</option>`#}
+
+        var company = document.getElementById('company_selector')
+        company.innerHTML =`
+        <option>{{ form.company.value }}</option>`
+
+        var bgt_detail = document.getElementById('bgt_selector')
+        bgt_detail.innerHTML =`
+        <option>{{ form.bgt_detail.value }}</option>`
+
+        var sld_date = document.getElementById('id_sld_date')
+        sld_date.value = `{{ form.sld_date.value }}`
+
+    {% endif %}
     {#</script>#}
 
 
@@ -76,56 +110,52 @@
 
 {% endblock %}
 {% block content %}
-    <h1 id="sell_header">فروش دوا</h1>>
+    <h1 id="sell_header">فروش دوا</h1>
     <form id="sell_form" method="post" enctype="multipart/form-data">
         <div id="sell_form_fields">
             <div class="pair">
-                <select id="name_selector" name="name">
-                    <option class="selector_option">
-                    </option>
-                </select>
                 <label>
+                    <select id="name_selector" name="name">
+                        <option class="selector_option">
+                        </option>
+                    </select>
                     نام
                 </label>
-                <select class="selector" id="company_selector" name="company">
-                    <option class="selector_option">
-                    </option>
-                </select>
+
                 <label>
+                    <select class="selector" id="company_selector" name="company">
+                        <option class="selector_option">
+                        </option>
+                    </select>
                     شرکت دوا
                 </label>
-
             </div>
             <div class="pair">
-                <select id="bgt_selector" name="bgt_detail">
-                    <option class="selector_option">
-                    </option>
-                </select>
                 <label>
+                    <select id="bgt_selector" name="bgt_detail">
+                        <option class="selector_option">
+                        </option>
+                    </select>
                     خرید ها
                 </label>
-                {{ form.amount }}
                 <label>
                     مقدار
+                    {{ form.amount }}
                 </label>
 
             </div>
             <div class="pair" style="display: flex; direction: ltr">
-
-                {{ form.price }}
                 <label>
-
                     قیمت فروش
+                    {{ form.price }}
                 </label>
-
-                <input type="date" style="display: flex" name="sld_date">
-
                 <label>
                     تاریخ
+                    {{ form.sld_date }}
                 </label>
 
-
             </div>
+
             <div class="pair">
                 {{ form.sld_bill }}
                 <label>
@@ -140,4 +170,18 @@
         {% csrf_token %}
         <input class="submitt" type="submit">
     </form>
+    <!--handling errors -->
+    <script src="{% static 'js/jdatepicker.js' %}">
+        {#window.alert("ssssssssssssss")#}
+        jDatePicker("id_sld_date")
+    </script>
+    {% if errors %}
+        <script>
+
+        </script>
+        <ul style="direction: rtl; color: darkred;margin-top: 50px">
+            خطا!
+            <li>{{ errors }}</li>
+        </ul>
+    {% endif %}
 {% endblock %}
