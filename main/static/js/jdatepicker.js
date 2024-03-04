@@ -211,4 +211,4 @@ function jDatePicker(id, options = {headerColor: '#2196f1', bodyColor: '#fff', d
 if (typeof exports != 'undefined') {
     module.exports.jDatePicker = jDatePicker
 }
-jDatePicker("id_sld_date")
+jDatePicker("id_date")

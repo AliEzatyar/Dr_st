@@ -16,7 +16,7 @@
     </span>
     <div class="user">
         {% if request.user.is_authenticated %}
-            Welcome, {{ request.user }}
+            {{ request.user }} خوش آمدید
             <br>
             <a class="logout" href="{% url 'a_ccount:log_out' %}">خارج شدن</a>
         {% endif %}

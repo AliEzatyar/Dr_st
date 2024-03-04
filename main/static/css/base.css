@@ -1,31 +1,35 @@
+body{
+    background-color: #c6f1ff;
+}
 #headeer {
     border-radius: 20px;
-    padding: 10px 100px;
-    height: 10%;
+    height: 13%;
     font-size: 20px;
     background-color: darkcyan;
     color: black;
-    border-bottom: 4px solid lightcyan;
+    border-bottom: 4px solid #3ddcb6;
+    font-family: "2  Davat";
 }
 
-#contents {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%)
-}
 
 #headeer .user {
-    color: blue;
-    float: left;
-    margin-top: 10px;
+    all: unset;
+    color: #090015;
+    margin-top: 0.0001%;
+    position: fixed;
+    right: 80%;
 }
 
-#headeer .store_name {
+.store_name {
+    all: unset;
+
     position: fixed;
-    left: 40%;
+    direction: rtl;
+    right: 35%;
     font-size: 50px;
     color: darkslateblue;
+    height: 5%;
+    top:0.01%;
 }
 
 
@@ -33,4 +37,15 @@ ul.messages {
     margin: 10px 100px;
     padding: 0;
     list-style-type: none;
+}
+
+.logout{
+    all: unset;
+    position: fixed;
+    background-color: #46c646;
+    border-radius: 5px;
+    zoom: 90%;
+    width: 10%;
+    direction: rtl;
+    text-align: center;
 }

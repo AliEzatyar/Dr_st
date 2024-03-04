@@ -9,21 +9,23 @@ from main.models import Drug, Bgt, Sld
 
 @admin.register(Bgt)
 class BgtAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'bg_price', 'amount', 'bg_date', 'bgt_bill', 'unique', 'currency']
-    list_filter = ['currency', 'bg_date', 'company']
+    list_display = ['name', 'company', 'bg_price', 'amount', 'date', 'bgt_bill', 'unique', 'currency']
+    list_filter = ['currency', 'date', 'company']
     ordering = [
-        'name', 'bgt_bill', 'bg_date'
+        'name', 'bgt_bill', 'date'
     ]
+    sortable_by = ['date','name','bgt_bill','amount']
 
 
 @admin.register(Sld)
 class SldAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'price', 'amount', 'sld_date', 'sld_bill', 'unique', 'currency']
-    list_filter = ['currency', 'sld_date', 'company']
-    ordering = ['name', 'sld_date', 'sld_bill']
-
+    list_display = ['name', 'company',"customer",'price', 'amount', 'date', 'sld_bill',"bgt", 'unique', 'currency']
+    list_filter = ['currency', 'date', 'company',"bgt"]
+    ordering = ['name', 'date', 'sld_bill']
+    sortable_by = ['date','name','sld_bill','amount']
 
 @admin.register(Drug)
 class DrugAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'description']
+    list_display = ['name', 'company', 'description','existing_amount']
     list_filter = ['company']
+    sortable_by = ['name','existing_amount']

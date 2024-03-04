@@ -1,35 +1,87 @@
-#buy {
+#buy_form_fields {
     position: fixed;
-    left: 40%;
+    right: 30%;
+    top: 30%;
+    direction: rtl;
+    zoom: 110%;
+    border-radius: 25px;
+}
 
+#submitt {
+    all: unset;
+    text-align: center;
+    border: 1px solid cornflowerblue;
+    border-radius: 4px;
+    margin-top: 4%;
+    width: 30%;
+    background-color: #a4f3ea;
+    margin-right: 55%;
+    /*    top: 85%;*/
+        /**/
+}
+
+#buy_form_fields input {
+    height: 50%;
 }
 
 #buy_title {
-    zoom: 150%;
-    border: 2px solid gray;
-    background-color: gray;
-    border-radius: 20px;
+    right: 41%;
+    top:15%;
+    position: fixed;
+    font-family: "2  Davat";
+    text-align: center;
 }
 
-#buy #forma{
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    grid-gap: 5px;
-}
-#form-row {
-    display: grid;
-    grid-template-columns: min-content 1fr;
-    align-items: center;
-    grid-gap: 40px;
-    zoom: 130%;
+label {
+    font-family: "2  Davat";
 }
 
-#form-row input {
-    width: 100px;
-
+.selectors {
+    width: 85%;
+    font-family: "2  Davat";
 }
 
-#form-row #pair {
-    /*margin: 10px;*/
-    /*display: flex;*/
+
+.pair {
+    margin-bottom: 1%;
+    display: flex;
+}
+
+
+#label_input {
+    width: 80%;
+}
+
+#img-preview {
+    border-radius: 5px;
+    top:36%;
+    position: fixed;
+    height: 46%;
+    width: 15%;
+    right: 65%;
+    border: 2px solid black;
+    /*direction: rtl;*/
+}
+#photo{
+    border: 10px solid black;
+    all: unset;
+    zoom: 90%;
+    top: 83%;
+    position: fixed;
+    right: 65%;
+    /*background-color: gray;*/
+}
+#file-upload-button{
+    all: unset;
+    background-color: #3ddcb6;
+}
+
+#errors{
+    direction: rtl;
+    color: darkred;
+    margin-top: 50px;
+    top:80%;
+    right: 28%;
+    position: fixed;
+
 }

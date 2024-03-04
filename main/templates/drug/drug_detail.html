@@ -1,0 +1,19 @@
+{% extends "main__/base.html" %}
+{% load static %}
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/drug/drug_detail.css' %}">
+{% endblock %}
+{% block content %}
+    <img id="drug_photo" src="{{ drug.photo.url }}" alt="No found">
+    <span id="drug_name">{{ drug.name }}</span>
+
+    <div id="drug_content">
+        <span id="company">شرکت دارو: </span><span id="company">{{ drug.company }}</span>
+        <br>
+        <span id="amount">مقدار موجود: </span><span id="amount">{{ drug.existing_amount }}</span>
+        <br>
+        <span id="details"> جزئیات:</span>
+        <br>
+        <span id="detailss">{{ drug.description|linebreaks }}</span>
+    </div>
+{% endblock %}

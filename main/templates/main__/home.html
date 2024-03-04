@@ -2,6 +2,15 @@
 {% block head %}
 {% endblock %}
 {% block content %}
-
-
+    {% for drug in durgs %}
+{#        <a href="{{ drug.get_absolute_url }}">{{ drug.name }} </a>#}
+        {% for bgt in drug.bgts.all %}
+            <a href="{{ bgt.get_absolute_url }}">{{ bgt }}</a>
+            <br>
+        {% endfor %}
+        {% for sld in drug.slds.all %}
+            <a href="{{ sld.get_absolute_url }}">{{ sld }}</a>
+            <br>
+        {% endfor %}
+    {% endfor %}
 {% endblock %}

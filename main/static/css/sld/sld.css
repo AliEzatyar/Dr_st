@@ -1,38 +1,85 @@
-#sell_form_fields{
+/*in many wheres if not positioning workd,set position to fixed*/
+#sell_form_fields {
+    position: fixed;
+    top:28%;
+    right: 30%;
     direction: rtl;
-    zoom: 150%;
-    border: 1px solid darkturquoise;
+    zoom: 110%;
     border-radius: 25px;
     /*display: grid;*/
     /*grid-gap: 10px;*/
 }
-.pair{
-    margin-top: 10px;
-    margin-left: 10px;
-    margin-right: 10px;
 
-}
-.submitt{
-    width: 100px;
-    height: 30px;
-    background-color: cornflowerblue;
-    border-radius: 25px;
+.submitt {
+    all: unset;
+    width: 13%;
+    height: 3.8%;
     position: fixed;
-    left: 40%;
-    margin-top: 10px;
-
-}
-#sell_form_fields .selector.selector_option{
-    background-color: gray;
-}
-
-#sell_form_fields label{
-    background-color: gray;
-}
-#sell_header{
-    margin-top: 30px;
-    background-color: gray;
+    border:1px solid black;
     text-align: center;
-    border:2px solid gray;
-    border-radius: 25px;
+    top: 82.7%;
+    right: 44.6%;
+    border-radius: 2px;
+    background-color: #a4f3ea;
+
+}
+
+#sell_header {
+    all: unset;
+    font-size: 240%;
+    font-family: "2  Davat";
+    top: 17%;
+    margin-bottom: 2%;
+    direction: rtl;
+    right: 38%;
+    position: fixed;
+}
+
+label {
+    font-family: "2  Davat";
+}
+
+.selectors {
+    font-family: "2  Davat";
+}
+
+
+#sell_form_fields input {
+    width: 90%;
+}
+
+.pair {
+    margin-bottom: 3%;
+    display: flex;
+}
+
+#id_date {
+    width: 80%;
+}
+
+#label_input {
+    width: 80%;
+}
+
+.selectors{
+    width: 90%;
+}
+#img-preview {
+    border-radius: 5px;
+    top:39%;
+    position: fixed;
+    height: 45%;
+    width: 15%;
+    right: 65%;
+    border: 2px solid black;
+    /*direction: rtl;*/
+}
+#errors{
+    direction: rtl;
+    color: darkred;
+    margin-top: 50px;
+    top:80%;
+    right: 28%;
+    position: fixed;
+
 }

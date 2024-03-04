@@ -29,6 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+MEDIA_URL = "media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
 # Application definition
 
@@ -120,9 +122,8 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+# this is needed to be added for media
 
-MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 
 STATIC_URL = 'static/'
 
