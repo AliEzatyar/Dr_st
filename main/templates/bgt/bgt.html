@@ -73,11 +73,6 @@
         <!--when drug exists before-->
         company_selector.addEventListener("change", function (e) {
             var new_drug = document.getElementById("new_drug")
-            if (new_drug === null) {
-                console.log('')
-            } else {
-                new_drug.remove()
-            }
             const company = e.target.value
             const drug_name = name_selector.value
             photo_url = "{{ media_url }}" + drug_name + "___" + company + ".jpg"
@@ -93,7 +88,6 @@
         })
         <!--when new drug is being added -->
         file_input.addEventListener('change', function () {
-            window.alert("sfdsdf")
             // Check if a file is selected
             if (file_input.files && file_input.files[0]) {
                 // Create a FileReader object
@@ -108,7 +102,6 @@
                 // Read the selected file as a URL
                 reader.readAsDataURL(file_input.files[0]);
                 x = reader.readAsDataURL(file_input.files[0])
-                window.alert(x)
             }
         });
 

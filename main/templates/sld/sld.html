@@ -86,6 +86,7 @@
     console.log(name + company)
     const photo_url = "{{ media_url }}" + name + "___" + company + ".jpg"
     img_preview.src = photo_url
+    window.alert(photo_url)
 
     })
     {% if errors %}

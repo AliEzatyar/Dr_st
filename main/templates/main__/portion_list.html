@@ -1,0 +1,69 @@
+{% load static %}
+{% load thumbnail %}
+{% load main_tags %}
+<style>
+
+    #detail_label {
+        background-color: #46c646;
+        direction: rtl;
+    }
+
+    #details {
+        display:flow;
+        color: #030205;
+        direction: rtl;
+        text-align: center;
+        font-family: "2  Davat";
+        font-size: 16px;
+        background-color: #55bbdd;
+        border-radius: 4px;
+    }
+
+    #drug {
+        float: left;
+        width: 200px;
+        height: 300px;
+        margin: 10px 3% 5% 10px;
+        border-top: 6px solid #55bbdd;
+        border-radius: 4px;
+        background-color: #55bbdd;
+    }
+    #bedon{
+        width: 200px;
+        height: 200px;
+    }
+    #photo {
+        border-radius: 4px;
+    }
+</style>
+{% for drug in page %}
+    <div id="drug">
+        <a href="{{ drug.get_absolute_url }}">
+
+            {% thumbnail drug.photo 199x200 crop="smart" as img %}
+            {% if img %}
+                <img id="photo" src="{{ img.url }} " alt="NO Photo">
+            {% else %}
+                <img id="bedon" alt="Bedon not fund" src="{% static 'UsedPhoto/BedonAks.jpg' %}">
+            {% endif %}
+        </a>
+        <div id="details">
+            نام دارو:
+            {{ drug.name }}
+
+            شرکت:
+            {{ drug.company }}
+
+            تعداد موجودی:
+            {{ drug.existing_amount }}
+
+            آخرین خرید:
+            {% last_bgt drug.name drug.company as last_bgt %}
+            <a href="{{ last_bgt.get_absolute_url }}">{{ last_bgt.date }}</a>
+            آخرین فروش:
+            {% last_sale drug.name drug.company as last_sld %}
+            <a href="{{ last_sld.get_absolute_url }}">{% if last_sld.date %}{{ last_sld.date }}{% else %}{{ last_sld }}{% endif %}</a>
+        </div>
+    </div>
+
+{% endfor %}

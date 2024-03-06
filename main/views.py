@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.files.base import ContentFile
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
@@ -14,10 +15,27 @@ from main.models import Bgt as Bg
 
 
 @login_required
-def main(request):
-    x = Drg.objects.all()[0]
-
-    return render(request, 'main__/home.html', {'user': request.user, 'durgs': Drg.objects.all()})
+def main_page(request):
+    drugs = Drg.objects.all()
+    # making a paginator
+    paginated = Paginator(drugs, 10)
+    requested_page = None
+    if "page" in request.GET:
+        requested_page = request.GET['page']
+        try:
+            page = paginated.page(requested_page)
+        except EmptyPage:
+            if "just_page" in request.GET:
+                return HttpResponse("")
+            page = paginated.page(paginated.num_pages)
+        except PageNotAnInteger:
+            page = paginated.page(1)
+        if requested_page:
+            print("page requested", requested_page, page)
+            return render(request, "main__/portion_list.html", {"page": page})
+    else:
+        page = paginated.page(1)
+        return render(request, 'main__/home.html', {'user': request.user, 'page': page})
 
 
 @login_required
@@ -27,8 +45,6 @@ def buy(request):
     if request.method == 'POST':
         data = request.POST
         form = BgtForm(data, request.FILES)
-        print(request.POST)
-        print("the from", form)
         if form.is_valid():
             bgt = form.save(commit=False)
             try:
@@ -39,11 +55,12 @@ def buy(request):
                 bgt.save()
                 drug.save()
             except Drg.DoesNotExist:
+
                 drug = Drg.objects.create(name=bgt.name, company=bgt.company,
                                           photo=bgt.photo, unique=bgt.name + "&&" + bgt.company,
                                           existing_amount=bgt.amount)
+
                 bgt.drug = drug
-                print("bgt_drig", bgt.drug)
                 bgt.save()
             messages.success(request, 'Saving was successful')
             return render(request, 'bgt/bgt.html', {'form': BgtForm(), "media_url": media_url, "drugs": drugs})

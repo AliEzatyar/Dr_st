@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    "easy_thumbnails.apps.EasyThumbnailsConfig",
+
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -123,6 +125,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 # this is needed to be added for media
+SESSION_COOKIE_AGE = 200
 
 
 STATIC_URL = 'static/'

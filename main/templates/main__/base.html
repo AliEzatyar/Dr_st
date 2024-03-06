@@ -10,19 +10,22 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-<div id="headeer">
-    <span class="store_name">
+<div id="header">
+    <div id="store_name">
         ادویه فروشی احمدیار
-    </span>
-    <div class="user">
-        {% if request.user.is_authenticated %}
-            {{ request.user }} خوش آمدید
-            <br>
-            <a class="logout" href="{% url 'a_ccount:log_out' %}">خارج شدن</a>
-        {% endif %}
-
     </div>
+    {% if request.user.is_authenticated %}
+        <div id="user">
+            خوش آمدید
+            {{ request.user }}
+            <br>
+            <span><a href="{% url 'a_ccount:log_out' %}">خارج شدن</a></span>
+        </div>
+    {% endif %}
 </div>
+<span class="user">
+
+    </span>
 <hr>
 <div id="contents">
     {% block content %}
