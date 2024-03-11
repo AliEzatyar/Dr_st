@@ -9,7 +9,7 @@ from copy import deepcopy
 # Create your views here.
 from django.views.decorators.http import require_POST
 
-from main.forms import BgtForm, SldForm, BgtEditForm, SldEdit
+from main.forms import BgtForm, SldForm, BgtEditForm, SldEdit, DrugEditForm
 from main.models import Drug as Drg, Bgt, Sld
 from main.models import Bgt as Bg
 
@@ -170,28 +170,28 @@ def show_sld_detail(request, name, company, date, customer):
 
 @login_required
 def edit_bgt(request, name, company, date):
+    """things to cnsider here
+        * drug uniqe , name , existing amount could change since being update
+        * bgt bqi and uniques + could be change
+    """
     data = request.POST
+    pre_bgt_unique = name + "&&" + company + "&&" + date
+    pre_bgt = deepcopy(Bgt.objects.get(unique=pre_bgt_unique))
+    pre_drug = deepcopy(pre_bgt.drug)
     if request.method == "POST":
-        bgt_unique = name + "&&" + company + "&&" + date
-        bgt = Bgt.objects.get(unique=bgt_unique)
-        bgt_edit_form = BgtEditForm(instance=bgt, data=data)
-        drug = Drg.objects.get(name=name, company=company)
-        pre_drug_unique = drug.unique
-        if bgt_edit_form.is_valid():
-            cd = bgt_edit_form.cleaned_data
-            new_drug_unique = cd['name'] + "&&" + cd['company']
-            print("photo of bgt", bgt_edit_form['photo'])
-            if new_drug_unique != pre_drug_unique:  # if name has changed, recreate the drug object
-                pre_drug = Drg.objects.get(name=name, company=company)
-                drug.name, drug.company = cd['name'], cd['company']
-                drug.unique = new_drug_unique
-                pre_drug.delete()
-            bgt = bgt_edit_form.save(commit=False)
-            drug.photo = bgt.photo
-            drug.save()
-            bgt.drug = drug
-            bgt.save()
-            return redirect(bgt.get_absolute_url)
+        bgt_edit_form = BgtEditForm(instance=deepcopy(pre_bgt), data=data)
+        drug_edit_form = DrugEditForm(instance=deepcopy(pre_drug), data=data)
+        if bgt_edit_form.is_valid() and drug_edit_form.is_valid():
+            # print("valdiation of both forms were down")
+            new_bgt = bgt_edit_form.save(commit=False)
+            new_drug = drug_edit_form.save(commit=False)
+            new_drug.existing_amount = pre_drug.existing_amount - pre_bgt.amount + new_bgt.amount
+            # print(pre_drug.existing_amount, pre_bgt.amount, new_bgt.amount,"exis, pre.amount,new amount")
+            # print(new_drug.existing_amount)
+            new_drug.save()
+            new_bgt.drug = new_drug
+            new_bgt.save()
+            return redirect(new_bgt.get_absolute_url())
         else:
             return HttpResponse("invalid", bgt_edit_form.errors)
 
@@ -199,7 +199,7 @@ def edit_bgt(request, name, company, date):
         unique = name + "&&" + company + "&&" + date
         instance = Bgt.objects.get(unique=unique)
         edit_form = BgtEditForm(instance=instance)
-        return render(request, "bgt/bgt.html", {'form': edit_form, "edit": 1, 'instance': instance})
+        return render(request, "bgt/bgt.html", {'form': edit_form, "edit": "1", 'instance': instance})
 
 
 @login_required

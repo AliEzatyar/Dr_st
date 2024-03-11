@@ -174,22 +174,29 @@ class SldForm(forms.ModelForm):
 
 
 # THIS STRATEGY DOES NOT WORK
-# class DrugEditForm(forms.ModelForm):
-#     class Meta:
-#         model = Drug
-#         fields = ['name', 'company', 'photo', 'unique']
-#
-#     def save(self, commit=True):
-#         new_drug = super().save(commit=False)
-#         new_drug.name = new_drug.name.title()
-#         new_drug.company = new_drug.company.title()
-#         new_drug.unique = new_drug.name + "&&" + new_drug.company
-#         print("drug edited")
-#         if commit:
-#             print("new drug saved")
-#             new_drug.save()
-#         return new_drug
-#
+class DrugEditForm(forms.ModelForm):
+    class Meta:
+        model = Drug
+        fields = ['name', 'company', 'photo']
+
+    def clean_name(self):
+        cd = self.cleaned_data
+        return str(cd['name']).title()
+
+    def clean_company(self):
+        cd = self.cleaned_data
+        return str(cd['company']).title()
+
+    def save(self, commit=True):
+        """makes the unique"""
+        new_drug = super().save(commit=False)
+        new_drug.unique = new_drug.name + "&&" + new_drug.company
+        print("drug edited")
+        if commit:
+            print("new drug saved")
+            new_drug.save()
+        return new_drug
+
 
 class BgtEditForm(forms.ModelForm):
     class Meta:
@@ -236,7 +243,8 @@ class SldEdit(forms.ModelForm):
         # modifying unique, profite
         bgt = new_sld.bgt
         new_sld.profite = new_sld.amount * (new_sld.price - bgt.bg_price)
-        new_sld.unique = str(new_sld.name) + "&&" + str(new_sld.company) + "&&" + str(new_sld.date) + "&&" + new_sld.customer
+        new_sld.unique = str(new_sld.name) + "&&" + str(new_sld.company) + "&&" + str(
+            new_sld.date) + "&&" + new_sld.customer
 
         """note that existing amount both in bgt and drug objects are handled in view, since we have not the previous sld object """
 

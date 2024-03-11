@@ -125,7 +125,7 @@
 {% endblock %}
 {% block title %}خرید{% endblock %}
 {% block content %}
-    <h1 id="buy_title">خرید دارو</h1>
+    <h1 id="buy_title">{% if not edit %}خرید دارو{% else %}ویرایش خرید{% endif %}</h1>
     {% if edit %}
         <form id='forma' enctype="multipart/form-data" method="post"
               action="{% url 'main:edit_bgt' instance.name instance.company instance.date %}">
