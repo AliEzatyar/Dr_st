@@ -4,12 +4,12 @@ from django.core.files.base import ContentFile
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import models
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
-
+from django.shortcuts import render, redirect
+from copy import deepcopy
 # Create your views here.
 from django.views.decorators.http import require_POST
 
-from main.forms import BgtForm, SldForm
+from main.forms import BgtForm, SldForm, BgtEditForm, SldEdit
 from main.models import Drug as Drg, Bgt, Sld
 from main.models import Bgt as Bg
 
@@ -20,6 +20,7 @@ def main_page(request):
     # making a paginator
     paginated = Paginator(drugs, 10)
     requested_page = None
+
     if "page" in request.GET:
         requested_page = request.GET['page']
         try:
@@ -139,12 +140,6 @@ def get_drug_companies(request):
 
 
 @login_required
-def get_photo_url(request):
-    name = request.GET['drug_name']
-    company = request.GET['company']
-
-
-@login_required
 def show_drug_detail(request, name, company):
     name = name.title()
     company = company.title()
@@ -155,19 +150,78 @@ def show_drug_detail(request, name, company):
 @login_required
 def show_bgt_detail(request, name, company, date):
     name = name.title()
-    print("bgt_detai veiw")
     company = company.title()
     unique = name + "&&" + company + "&&" + date
+
     bgt = Bgt.objects.get(unique=unique)
     drug = Drg.objects.get(name=name, company=company)
     return render(request, "bgt/bgt_detail.html", {"bgt": bgt, "drug": drug})
 
 
 @login_required
-def show_sld_detail(request, name, customer, date):
+def show_sld_detail(request, name, company, date, customer):
     name = name.title()
     customer = customer.title()
-    unique = name + "&&" + date + "&&" + customer
+    unique = name + "&&" + company + "&&" + date + "&&" + customer
     sld = Sld.objects.get(unique=unique)
     drug = Drg.objects.get(name=name, company=sld.company)
     return render(request, "sld/sld_detail.html", {"sld": sld, "drug": drug})
+
+
+@login_required
+def edit_bgt(request, name, company, date):
+    data = request.POST
+    if request.method == "POST":
+        bgt_unique = name + "&&" + company + "&&" + date
+        bgt = Bgt.objects.get(unique=bgt_unique)
+        bgt_edit_form = BgtEditForm(instance=bgt, data=data)
+        drug = Drg.objects.get(name=name, company=company)
+        pre_drug_unique = drug.unique
+        if bgt_edit_form.is_valid():
+            cd = bgt_edit_form.cleaned_data
+            new_drug_unique = cd['name'] + "&&" + cd['company']
+            print("photo of bgt", bgt_edit_form['photo'])
+            if new_drug_unique != pre_drug_unique:  # if name has changed, recreate the drug object
+                pre_drug = Drg.objects.get(name=name, company=company)
+                drug.name, drug.company = cd['name'], cd['company']
+                drug.unique = new_drug_unique
+                pre_drug.delete()
+            bgt = bgt_edit_form.save(commit=False)
+            drug.photo = bgt.photo
+            drug.save()
+            bgt.drug = drug
+            bgt.save()
+            return redirect(bgt.get_absolute_url)
+        else:
+            return HttpResponse("invalid", bgt_edit_form.errors)
+
+    else:
+        unique = name + "&&" + company + "&&" + date
+        instance = Bgt.objects.get(unique=unique)
+        edit_form = BgtEditForm(instance=instance)
+        return render(request, "bgt/bgt.html", {'form': edit_form, "edit": 1, 'instance': instance})
+
+
+@login_required
+def edit_sld(request, name, company, date, customer):
+    pre_unique = name + "&&" + company + "&&" + date + "&&" + customer
+    pre_sld = deepcopy(Sld.objects.get(unique=pre_unique))
+    if request.method == "POST":
+        sld_edit_form = SldEdit(instance=Sld.objects.get(unique=pre_unique), data=request.POST)
+        if sld_edit_form.is_valid():
+            new_sld = sld_edit_form.save(commit=False)
+            # calculating the existing amount both for drug and bgt
+            bgt_baqi = pre_sld.bgt.baqi_amount
+            new_sld.drug.existing_amount = pre_sld.drug.existing_amount + pre_sld.amount - new_sld.amount
+            new_sld.bgt.baqi_amount = bgt_baqi + pre_sld.amount - new_sld.amount
+            new_sld.bgt.sld_amount = new_sld.bgt.amount - new_sld.bgt.baqi_amount
+            new_sld.bgt.save()
+            new_sld.drug.save()
+            new_sld.save()
+            # pre_sld.delete() ---> does not work since memory reference are the same
+            return redirect(new_sld.get_absolute_url())
+        else:
+            return HttpResponse("THere was a problem", sld_edit_form.errors)
+    else:
+        sld_edit_frm = SldEdit(instance=pre_sld)
+        return render(request, "sld/sld.html", {"form": sld_edit_frm, "instance": pre_sld, "edit": "1"})

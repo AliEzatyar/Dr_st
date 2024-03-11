@@ -1,7 +1,7 @@
 /*in many wheres if not positioning workd,set position to fixed*/
 #sell_form_fields {
     position: fixed;
-    top:28%;
+    top: 28%;
     right: 30%;
     direction: rtl;
     zoom: 110%;
@@ -9,13 +9,28 @@
     /*display: grid;*/
     /*grid-gap: 10px;*/
 }
+#id_name{
 
+}
+.submitt_edit{
+    all: unset;
+    width: 13%;
+    height: 3.8%;
+    position: fixed;
+    border: 1px solid black;
+    text-align: center;
+    top: 87.3%;
+    right: 44.6%;
+    border-radius: 2px;
+    background-color: #a4f3ea;
+
+}
 .submitt {
     all: unset;
     width: 13%;
     height: 3.8%;
     position: fixed;
-    border:1px solid black;
+    border: 1px solid black;
     text-align: center;
     top: 82.7%;
     right: 44.6%;
@@ -46,6 +61,7 @@ label {
 
 #sell_form_fields input {
     width: 90%;
+    height: 47%;
 }
 
 .pair {
@@ -61,12 +77,13 @@ label {
     width: 80%;
 }
 
-.selectors{
+.selectors {
     width: 90%;
 }
+
 #img-preview {
     border-radius: 5px;
-    top:39%;
+    top: 39%;
     position: fixed;
     height: 45%;
     width: 15%;
@@ -74,12 +91,17 @@ label {
     border: 2px solid black;
     /*direction: rtl;*/
 }
-#errors{
+
+#errors {
     direction: rtl;
     color: darkred;
     margin-top: 50px;
-    top:80%;
+    top: 80%;
     right: 28%;
     position: fixed;
 
+}
+
+#edit {
+    right: 47%;
 }

@@ -9,8 +9,9 @@
     }
 
     #details {
-        display:flow;
-        color: #030205;
+        display: flow;
+        color: indigo;
+        margin: 0px 0px 0px 1px;
         direction: rtl;
         text-align: center;
         font-family: "2  Davat";
@@ -28,10 +29,12 @@
         border-radius: 4px;
         background-color: #55bbdd;
     }
-    #bedon{
+
+    #bedon {
         width: 200px;
         height: 200px;
     }
+
     #photo {
         border-radius: 4px;
     }
@@ -47,23 +50,31 @@
                 <img id="bedon" alt="Bedon not fund" src="{% static 'UsedPhoto/BedonAks.jpg' %}">
             {% endif %}
         </a>
-        <div id="details">
-            نام دارو:
-            {{ drug.name }}
-
-            شرکت:
-            {{ drug.company }}
-
-            تعداد موجودی:
-            {{ drug.existing_amount }}
-
-            آخرین خرید:
-            {% last_bgt drug.name drug.company as last_bgt %}
-            <a href="{{ last_bgt.get_absolute_url }}">{{ last_bgt.date }}</a>
-            آخرین فروش:
-            {% last_sale drug.name drug.company as last_sld %}
-            <a href="{{ last_sld.get_absolute_url }}">{% if last_sld.date %}{{ last_sld.date }}{% else %}{{ last_sld }}{% endif %}</a>
-        </div>
+        <ul id="details">
+            <li>
+                نام دارو:
+                {{ drug.name }}
+            </li>
+            <li>
+                شرکت:
+                {{ drug.company }}
+            </li>
+            <LI>
+                تعداد موجودی:
+                {{ drug.existing_amount }}
+            </LI>
+            <li>
+                آخرین خرید:
+                {% last_bgt drug.name drug.company as last_bgt %}
+                <a href="{{ last_bgt.get_absolute_url }}">{{ last_bgt.date }}</a>
+            </li>
+            <li>
+                آخرین فروش:
+                {% last_sale drug.name drug.company as last_sld %}
+                <a href="{{ last_sld.get_absolute_url }}">
+                    {% if last_sld.date %}{{ last_sld.date }}{% else %}{{ last_sld }}{% endif %}</a>
+            </li>
+        </ul>
     </div>
 
 {% endfor %}

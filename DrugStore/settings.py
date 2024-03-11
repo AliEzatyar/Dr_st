@@ -35,6 +35,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, MEDIA_URL)
 # Application definition
 
 INSTALLED_APPS = [
+    'debug_toolbar',
     'django_jalali',
     'main.apps.MainConfig',
     'a_ccount.apps.ACcountConfig',
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -109,6 +111,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+    '127.0.0.2',
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
@@ -125,7 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 # this is needed to be added for media
-SESSION_COOKIE_AGE = 200
+SESSION_COOKIE_AGE =1000
 
 
 STATIC_URL = 'static/'
@@ -134,3 +140,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+if DEBUG:
+    import mimetypes
+    mimetypes.add_type('application/javascript', '.js', True)
+    mimetypes.add_type('text/css', '.css', True)

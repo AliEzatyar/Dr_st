@@ -10,7 +10,7 @@
         var page = 1
 
         window.addEventListener("scroll", function (e) {
-            if (window.pageYOffset - difference > 200) {
+            if (window.pageYOffset - difference > 100) {
                 console.log("greater than " + difference)
                 difference = window.pageYOffset
                 page += 1
@@ -29,6 +29,7 @@
 {#    </script>#}
 {% endblock %}
 {% block content %}
+
     <div id="drug_list">
         {% include 'main__/portion_list.html' %}
     </div>

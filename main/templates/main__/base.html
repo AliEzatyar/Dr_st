@@ -14,18 +14,25 @@
     <div id="store_name">
         ادویه فروشی احمدیار
     </div>
+
     {% if request.user.is_authenticated %}
-        <div id="user">
+        <div id="menu_bar">
+            <span id="menu_item"><a href="{% url 'main:main' %}"> صفحه اصلی </a></span>
+            <span id="menu_item"><a href="#">لیست خرید ها</a></span>
+            <span id="menu_item"><a href="#"> لیست فروشات </a></span>
+            <span id="menu_item"><a href="#"> لیست مصارف </a></span>
+            <span id="menu_item"><a href="#"> عواید </a></span>
+
+        </div>
+        <div id="welcm">
             خوش آمدید
             {{ request.user }}
             <br>
             <span><a href="{% url 'a_ccount:log_out' %}">خارج شدن</a></span>
         </div>
     {% endif %}
-</div>
-<span class="user">
 
-    </span>
+</div>
 <hr>
 <div id="contents">
     {% block content %}
@@ -36,6 +43,5 @@
     document.addEventListener('DOMContentLoaded', function (e) {
         {% block domready %}
         {% endblock %}
-
     })
 </script>

@@ -22,8 +22,8 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls', namespace='main')),
-
-    path('Account/', include('a_ccount.urls', namespace='a_ccount'))
+    path('Account/', include('a_ccount.urls', namespace='a_ccount')),
+    path("__debug__/",include("debug_toolbar.urls")),
 ]
 if settings.DEBUG:  # if we have set DEBUG==True
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

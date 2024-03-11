@@ -13,6 +13,8 @@ urlpatterns = [
     path('getCompanies/',views.get_drug_companies,name="get_companies"),
     path('detail/<str:name>/<str:company>/',views.show_drug_detail,name="show_drug_detail"),
     path('bgt_detail/<str:name>/<str:company>/<str:date>/',views.show_bgt_detail,name="show_bgt_detail"),
-    path('sld_detail/<str:name>/<str:customer>/<str:date>/', views.show_sld_detail, name="show_sld_detail"),
+    path('sld_detail/<str:name>/<str:company>/<str:date>/<str:customer>/', views.show_sld_detail, name="show_sld_detail"),
+    path('Bgtdit/<str:name>/<str:company>/<str:date>/',views.edit_bgt,name="edit_bgt"),
+    path('SldEdit/<str:name>/<str:company>/<str:date>/<str:customer>',views.edit_sld,name="edit_sld"),
 
 ]

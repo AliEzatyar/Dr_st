@@ -16,6 +16,9 @@ def last_sale(drug_name, company):
 
 @register.simple_tag(name="last_bgt")
 def last_bgt(drug_name, company):
-    bgt = Bgt.objects.order_by('-date')[0]
+    print(drug_name,company,"=====================")
+
+    bgts = Bgt.objects.filter(name=drug_name,company=company)
+    bgt = bgts.order_by("-date")[0]
     return bgt
     # return str(bgt.date) + "__" + str(bgt.amount)

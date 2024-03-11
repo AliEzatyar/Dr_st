@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="{% static 'css/drug/drug_detail.css' %}">
 {% endblock %}
 {% block content %}
-    <img id="drug_photo" src="{{ drug.photo.url }}" alt="No found">
+    <img id="drug_photo" src="{% if drug.photo.url %}{{ drug.photo.url }}{% else %}{% endif %}" alt="No found">
     <span id="drug_name">{{ drug.name }}</span>
 
     <div id="drug_content">

@@ -63,7 +63,6 @@ class BgtForm(forms.ModelForm):
         unique = cd['name'].title() + "&&" + cd['company'].title() + "&&" + str(cd['date'])
         if Bgt.objects.filter(unique=unique).count() > 0:
             raise ValidationError("این خرید قبلا ثبت شده است")
-
         return cd
 
     def save(self, commit=True):
@@ -79,7 +78,6 @@ class BgtForm(forms.ModelForm):
         # renaming image
         photo = cd['photo']
         """note: photos could be 2 type here, one is the default photo abs BedonAks, second: imageFiled object"""
-        print(photo,"--++---------------------")
         if type(photo) != str:
             extension = str(photo.name).rsplit(".", 1)[1].lower()
             new_photo_name = bgt.name + "___" + bgt.company + "." + extension
@@ -168,8 +166,80 @@ class SldForm(forms.ModelForm):
         """filling drug foriegnKey and creating unique"""
         cd = self.cleaned_data
         sld_obj = super().save(commit=False)
-        sld_obj.unique = cd['name'] + "&&" + str(cd['date']) + "&&" + cd['customer']
-        sld_obj.drug = Drug.objects.get(unique=sld_obj.name+"&&"+sld_obj.company)
+        sld_obj.unique = str(cd['name']) + "&&" + cd['company'] + "&&" + str(cd['date']) + "&&" + str(cd['customer'])
+        sld_obj.drug = Drug.objects.get(unique=sld_obj.name + "&&" + sld_obj.company)
         if commit:
             sld_obj.save()
         return sld_obj
+
+
+# THIS STRATEGY DOES NOT WORK
+# class DrugEditForm(forms.ModelForm):
+#     class Meta:
+#         model = Drug
+#         fields = ['name', 'company', 'photo', 'unique']
+#
+#     def save(self, commit=True):
+#         new_drug = super().save(commit=False)
+#         new_drug.name = new_drug.name.title()
+#         new_drug.company = new_drug.company.title()
+#         new_drug.unique = new_drug.name + "&&" + new_drug.company
+#         print("drug edited")
+#         if commit:
+#             print("new drug saved")
+#             new_drug.save()
+#         return new_drug
+#
+
+class BgtEditForm(forms.ModelForm):
+    class Meta:
+        model = Bgt
+        fields = [
+            'name', 'amount', 'bg_price', 'company', 'date',
+            "photo", 'bgt_bill', 'total', 'currency',
+        ]
+
+    def clean_name(self):
+        cd = self.cleaned_data
+        name = cd['name'].title()
+        return name
+
+    def company(self):
+        cd = self.cleaned_data
+        company = cd['company'].title()
+        return company
+
+    def save(self, commit=True):
+        new_bgt = super().save(commit=False)
+        new_bgt.unique = new_bgt.name + "&&" + new_bgt.company + "&&" + str(new_bgt.date)
+        if commit:
+            new_bgt.save()
+        return new_bgt
+
+
+class SldEdit(forms.ModelForm):
+    """name, company are not changeble in this form"""
+
+    class Meta:
+        model = Sld
+        fields = [
+            'amount', 'price', 'customer',
+            'sld_bill', 'currency', 'total', 'date'
+        ]
+
+    def clean_customer(self):
+        return str(self.cleaned_data['customer']).title()
+
+    def save(self, commit=True):
+        new_sld = super().save(commit=False)
+        """since we have got the instance before, we have the bgt related to this set before, so use it for calculating the profite"""
+        # modifying unique, profite
+        bgt = new_sld.bgt
+        new_sld.profite = new_sld.amount * (new_sld.price - bgt.bg_price)
+        new_sld.unique = str(new_sld.name) + "&&" + str(new_sld.company) + "&&" + str(new_sld.date) + "&&" + new_sld.customer
+
+        """note that existing amount both in bgt and drug objects are handled in view, since we have not the previous sld object """
+
+        if commit:
+            new_sld.save()
+        return new_sld

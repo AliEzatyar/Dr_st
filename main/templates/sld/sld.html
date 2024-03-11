@@ -1,7 +1,7 @@
 {% extends 'main__/base.html' %}
 <!DOCTYPE html>
 {% load static %}
-{% block title %}فروش دوا{% endblock %}
+{% block title %}{% if not edit %}فروش دوا{% else %}ویرایش فروش{% endif %}{% endblock %}
 {% block head %}
 {% endblock %}
 
@@ -10,48 +10,54 @@
 {% endblock %}
 {% block domready %}
     {#    <script>#}
-    <!-- fillingnameselector-->
-    var name_selector = document.getElementById('name_selector')
-    name_selector.innerHTML += `
-    {% for drug in drugs %}
-        <option class="selector_option">
-            {{ drug }}
-        </option>
-    {% endfor %}
-    `
-    <!-- filling company selector-->
-    var company_selector = document.getElementById('company_selector')
     var bgts_selector = document.getElementById('bgt_selector')
-    var date = document.getElementById("date")
 
-    name_selector.addEventListener('change', function (e) {
-    const drugName = e.target.value
-    company_selector.innerHTML =`
-    <option>انتخاب شرکت</option>`
-    <!--filling company selector-->
-    const get_cmp_url = "{% url 'main:get_companies' %}"
-    fetch(get_cmp_url + "?drug_name=" + drugName).then(response => response.json()).then(list => list.forEach(company =>
-    {
-    function formatter(html, ...args) {
-    return html.reduce((acc, curr, i) => acc + args[i - 1] + curr);
-    }
+    {% if not edit %}
 
-    company_selector.innerHTML += formatter`
-    <option>
-        ${company}
-    </option>
-    `
+        <!--fillingnameselector-->
+        var name_selector = document.getElementById('name_selector')
+        name_selector.innerHTML += `
+        {% for drug in drugs %}
+            <option class="selector_option">
+                {{ drug }}
+            </option>
+        {% endfor %}
+        `
 
-    }))
+        <!-- filling company selector-->
 
-    })
+        var company_selector = document.getElementById('company_selector')
+        var date = document.getElementById("date")
 
-    <!--filling bgts selector-->
-    company_selector.addEventListener('change', function (eventt) {
-    bgts_selector.innerHTML = `
-    <option>انتخاب خرید</option>`
-    const selected_company = eventt.target.value
-    const selected_drug = name_selector.value
+        name_selector.addEventListener('change', function (e) {
+        const drugName = e.target.value
+        company_selector.innerHTML = `
+        <option>انتخاب شرکت</option>`
+        <!--filling company selector-->
+        const get_cmp_url = "{% url 'main:get_companies' %}"
+        fetch(get_cmp_url + "?drug_name=" + drugName).then(response => response.json()).then(list =>
+        list.forEach(company => {
+        function formatter(html, ...args) {
+        return html.reduce((acc, curr, i) => acc + args[i - 1] + curr);
+        }
+
+        company_selector.innerHTML += formatter`
+        <option>
+            ${company}
+        </option>
+        `
+        }))
+        })
+        <!--filling bgts selector-->
+        company_selector.addEventListener('change', function (eventt) {
+        bgts_selector.innerHTML = `
+        <option>انتخاب خرید</option>`
+        var selected_company = eventt.target.value
+        var selected_drug = name_selector.value
+    {% else %}
+        var selected_company = '{{ instance.company }}'
+        var selected_drug = '{{ instance.name }}'
+    {% endif %}
     const url = "{% url 'main:get_bgts' %}"
     fetch(url + "?drug_name=" + selected_drug + "&" + "company=" + selected_company).then(response =>
     response.json()).then(list => list.forEach(detail => {
@@ -69,8 +75,9 @@
     </option>
     `
     }))
-    })
-
+    {% if not edit %}
+        })
+    {% endif %}
     <!--auto total calculating-->
     document.getElementById('id_price').addEventListener('keyup', function (e) {
     var total = document.getElementById('id_total');
@@ -78,17 +85,18 @@
     var amount = document.getElementById('id_amount')
     total.value = Number(pricee.value) * Number(amount.value)
     })
-    <!--making an image preview-->
-    document.getElementById("company_selector").addEventListener("change", function (e) {
-    const company = e.target.value
-    const name = document.getElementById("name_selector").value
-    var img_preview = document.getElementById("img-preview")
-    console.log(name + company)
-    const photo_url = "{{ media_url }}" + name + "___" + company + ".jpg"
-    img_preview.src = photo_url
-    window.alert(photo_url)
+    {% if not edit %}
+        <!--making an image preview-->
+        document.getElementById("company_selector").addEventListener("change", function (e) {
+        const company = e.target.value
+        const name = document.getElementById("name_selector").value
+        var img_preview = document.getElementById("img-preview")
+        console.log(name + company)
+        const photo_url = "{{ media_url }}" + name + "___" + company + ".jpg"
+        img_preview.src = photo_url
 
-    })
+        })
+    {% endif %}
     {% if errors %}
         var company = document.getElementById('company_selector')
         company.innerHTML = `
@@ -96,7 +104,7 @@
         var name = document.getElementById("name_selector")
         name.value = "{{ form.name.value }}"
         var bgt_detail = document.getElementById('bgt_selector')
-        bgt_detail.innerHTML=`
+        bgt_detail.innerHTML = `
         <option>{{ form.bgt_detail.value }}</option>`
         var date = document.getElementById('id_date')
         date.value = "{{ form.date.value }}"
@@ -104,126 +112,152 @@
     {% endif %}
 
     {#</script>#}
-
-
 {% endblock %}
 {% block content %}
-    <h1 id="sell_header">فروش دوا</h1>
-    <form id="sell_form" method="post" enctype="multipart/form-data">
-        <div id="sell_form_fields">
-            <div class="pair">
-                <div id="label_input">
-                    <label>
-                        نام دارو
-                    </label>
-                    <br>
-                    <select class="selectors" id="name_selector" name="name">
-                        <option class="selector_option">
-                            انتخاب دارو
-                        </option>
-                    </select>
-                </div>
-                <div id="label_input">
 
-                    <label>
-                        شرکت دوا
-                    </label>
-                    <br>
-                    <select class="selectors" id="company_selector" name="company">
-                        <option class="selector_option">
-                            انتخاب شرکت
-                        </option>
-                    </select>
-                </div>
-            </div>
-            <div class="pair">
-                <div id="label_input">
-
-                    <label>
-                        خرید ها
-                    </label>
-                    <br>
-                    <select class="selectors" name="bgt_detail" id="bgt_selector">
-                        <option class="selector_option">
-                            انتخاب خرید
-                        </option>
-                    </select>
-                </div>
-                <div id="label_input">
-
-                    <label>
-                        مقدار فروش
-                    </label>
-                    <br>
-                    {{ form.amount }}
-                </div>
-            </div>
-            <div class="pair">
-                <div id="label_input">
-                    <label>
-                        قیمت فروش
-                    </label>
-                    <br>
-                    {{ form.price }}
-                </div>
-                <div id="label_input">
-                    <label>
-                        اسم مشتری
-                    </label>
-                    <br>
-                    {{ form.customer }}
-                </div>
-
-            </div>
-
-            <div class="pair">
-                <div id="label_input">
-                    <label>
-                        تاریخ
-                    </label>
-                    <br>
-                    {{ form.date }}
-                </div>
-                <div id="label_input">
-
-                    <label>
-                        بیل نمبر
-                    </label>
-                    <br>
-                    {{ form.sld_bill }}
-                </div>
-
-
-            </div>
-            <div class="pair">
-                <div id="label_input">
-
-                    <label>
-                        مجموع
-                    </label>
-                    <br>
-                    {{ form.total }}
-                </div>
-                <div id="label_input">
-                </div>
-
-            </div>
-        </div>
-        {% csrf_token %}
-        <input class="submitt" type="submit" value="ثبت فروش">
-    </form>
-    <img id="img-preview" style="" src="{% static 'UsedPhoto/BedonAks.jpg' %}">
-
-    <!--handling errors -->
-    <script src="{% static 'js/jdatepicker.js' %}">
-        jDatePicker("id_date")
-    </script>
-    {% if errors %}
-        <ul id="errors">
-            خطا!
-            {% for error in errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
+    <h1 id="sell_header">{% if not edit %}فروش دوا{% else %}ویرایش فروش{% endif %}</h1>
+    {% if edit %}
+        <form id='forma' enctype="multipart/form-data" method="post"
+              action="{% url 'main:edit_sld' instance.name instance.company instance.date instance.customer %}">
+    {% else %}
+        <form id="sell_form" method="post" enctype="multipart/form-data">
     {% endif %}
+<div id="sell_form_fields">
+    <div class="pair">
+        <div id="label_input">
+            <label>
+                نام دارو:
+            </label>
+            <br>
+            {% if edit %}
+                <p style="background-color: white;width: 90%;border: 0.5px solid black;height: 30%">
+                    {{ instance.name }}
+                </p>
+            {% else %}
+                <select class="selectors" id="name_selector" name="name">
+                    <option class="selector_option">
+                        انتخاب دارو
+                    </option>
+                </select>
+            {% endif %}
+
+        </div>
+        <div id="label_input">
+
+            <label>
+                شرکت دوا:
+            </label>
+            <br>
+            {% if edit %}
+                <p style="background-color: white;width: 90%;border:0.5px solid black;height: 30%">
+                    {{ instance.company }}
+                </p>
+            {% else %}
+                <select class="selectors" id="company_selector" name="company">
+                    <option class="selector_option">
+                        انتخاب شرکت
+                    </option>
+                </select>
+            {% endif %}
+        </div>
+    </div>
+    <div class="pair">
+        <div id="label_input">
+
+            <label>
+                خرید ها
+            </label>
+            <br>
+            <select class="selectors" name="bgt_detail" id="bgt_selector">
+                <option class="selector_option">
+                    انتخاب خرید
+                </option>
+            </select>
+        </div>
+        <div id="label_input">
+
+            <label>
+                مقدار فروش
+            </label>
+            <br>
+            {{ form.amount }}
+        </div>
+    </div>
+    <div class="pair">
+        <div id="label_input">
+            <label>
+                قیمت فروش
+            </label>
+            <br>
+            {{ form.price }}
+        </div>
+        <div id="label_input">
+            <label>
+                اسم مشتری
+            </label>
+            <br>
+            {{ form.customer }}
+        </div>
+
+    </div>
+
+    <div class="pair">
+        <div id="label_input">
+            <label>
+                تاریخ
+            </label>
+            <br>
+            {{ form.date }}
+        </div>
+        <div id="label_input">
+
+            <label>
+                بیل نمبر
+            </label>
+            <br>
+            {{ form.sld_bill }}
+        </div>
+
+
+    </div>
+    <div class="pair">
+        <div id="label_input">
+
+            <label>
+                مجموع
+            </label>
+            <br>
+            {{ form.total }}
+        </div>
+        <div id="label_input">
+        </div>
+
+    </div>
+</div>
+{% csrf_token %}
+{% if edit %}
+    <input type="hidden" value="{{ instance.unique }}">
+    <input class="submitt_edit" type="submit" value="ذخیره تغییرات">
+{% else %}
+    <input class="submitt" type="submit" value="ثبت فروش">
+{% endif %}
+</form>
+{% if edit %}
+    <img id="img-preview" style="" src="{{ instance.bgt.photo.url }}">
+{% else %}
+    <img id="img-preview" style="" src="{% static 'UsedPhoto/BedonAks.jpg' %}">
+{% endif %}
+
+<!--handling errors -->
+<script src="{% static 'js/jdatepicker.js' %}">
+    jDatePicker("id_date")
+</script>
+{% if errors %}
+    <ul id="errors">
+        خطا!
+        {% for error in errors %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
 {% endblock %}

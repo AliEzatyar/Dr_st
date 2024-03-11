@@ -3,10 +3,9 @@ body{
 }
 #header {
     display: flex;
-
     direction: rtl;
     border-radius: 20px;
-    height: 10%;
+    height: 12%;
     font-size: 20px;
     /*background-color: darkcyan;*/
     color: black;
@@ -14,7 +13,7 @@ body{
     font-family: "2  Davat";
 }
 #welcm{
-    margin-right: 80%;
+    margin-right: 10%;
 }
 
 #user {
@@ -26,10 +25,14 @@ body{
 
 #store_name {
     all: unset;
-    margin-right: 10%;
-    zoom: 140%;
+    margin-right: 4%;
+    margin-left: 6%;
+    zoom: 150%;
     direction: rtl;
     color: darkslateblue;
+    background-color: #9de0d0;
+    margin-bottom: 5px;
+    border-radius: 10px;
     /*height: 5%;*/
 }
 
@@ -41,13 +44,25 @@ ul.messages {
 }
 
 #logout{
-    margin: 10px 52% 10px 10px;
     background-color: #a4f3ea;
     /*margin-right: 60%;*/
     /*position: fixed;*/
-    /*background-colo   r: #befff4;*/
     border-radius: 5px;
     /*zoom: 90%;*/
     /*width: 30px;*/
     /*text-align: center;*/
+}
+#menu_bar{
+    display: flex;
+
+}
+#menu_item{
+    all: unset;
+    background-color: #3ddcb6;
+    border-radius: 4px;
+    margin-top: 6px;
+    margin-bottom: 15px;
+    width: 100px;
+    margin-right: 10px;
+    text-align: center;
 }
