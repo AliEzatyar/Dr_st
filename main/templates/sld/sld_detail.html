@@ -41,7 +41,9 @@
         {{ sld.total }}
         <span id="price_lbl"> {{ sld.currency }} </span>
         <br>
-        <span id="see_bgts"><a href="{{ sld.bgt.get_absolute_url }}"> دیدن جزئیات خرید</a></span>
-        <span id="edit" ><a href="{% url 'main:edit_sld' sld.name sld.company sld.date sld.customer %}">ویرایش کردن</a> </span>
+        <span id="buttons"><a href="{{ sld.bgt.get_absolute_url }}"> دیدن جزئیات خرید</a></span>
+        <span id="buttons"><a href="{% url 'main:edit_sld' sld.name sld.company sld.date sld.customer %}">ویرایش کردن</a> </span>
+        <span id="buttons"><a href="{% url 'main:delete_sld' sld.name sld.company sld.date sld.customer %}">حذف فروش</a> </span>
+
     </div>
 {% endblock %}

@@ -36,6 +36,14 @@
     border: 0.5px dashed black;
     position: fixed;
     width: 25%;
-    height: 28%;
+    height: 18%;
     padding: 4px;
+
+}
+#buttons{
+    position: fixed;
+    zoom:70%;
+    background-color: red;
+    border-radius: 5px;
+    margin-top: 100px;
 }

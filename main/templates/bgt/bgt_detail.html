@@ -41,9 +41,11 @@
         </label>
         {{ bgt.total }}
         <br>
-        <span id="see_bgts"><a href="{{ bgt.drug.get_absolute_url }}"> دیدن جزئیات دارو</a></span>
+        <span id="see_bgts"><a href="{{ bgt.drug.get_absolute_url }}"> جزئیات دارو</a></span>
         <span style="margin-right: 25px" id="see_bgts"><a
                 href="{% url 'main:edit_bgt' bgt.name bgt.company bgt.date %}">ویرایش نمودن</a></span>
+        <span style="margin-right: 25px;background-color: red; border-radius: 10px" id="see_bgts"><a
+                href="{% url 'main:delete_bgt' bgt.name bgt.company bgt.date %}" style="color: white">حذف خرید</a></span>
 
     </div>
 {% endblock %}

@@ -78,7 +78,7 @@ class BgtForm(forms.ModelForm):
         # renaming image
         photo = cd['photo']
         """note: photos could be 2 type here, one is the default photo abs BedonAks, second: imageFiled object"""
-        if type(photo) != str:
+        if type(photo) != str and photo != None:
             extension = str(photo.name).rsplit(".", 1)[1].lower()
             new_photo_name = bgt.name + "___" + bgt.company + "." + extension
             bgt.photo.name = new_photo_name

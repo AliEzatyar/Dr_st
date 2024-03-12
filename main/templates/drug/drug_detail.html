@@ -15,5 +15,7 @@
         <span id="details"> جزئیات:</span>
         <br>
         <span id="detailss">{{ drug.description|linebreaks }}</span>
+
+        <span id="buttons"><a style="color: white" href="{% url 'main:delete_drug' drug.name drug.company %}"> حذف دارو </a></span>
     </div>
 {% endblock %}

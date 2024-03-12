@@ -16,5 +16,8 @@ urlpatterns = [
     path('sld_detail/<str:name>/<str:company>/<str:date>/<str:customer>/', views.show_sld_detail, name="show_sld_detail"),
     path('Bgtdit/<str:name>/<str:company>/<str:date>/',views.edit_bgt,name="edit_bgt"),
     path('SldEdit/<str:name>/<str:company>/<str:date>/<str:customer>',views.edit_sld,name="edit_sld"),
+    path('delete-drug/<str:name>/<str:company>/',views.delete,name="delete_drug"),
+    path("delete-bgt/<str:name>/<str:company>/<str:date>/",views.delete,name="delete_bgt"),
+    path("delete-sld/<str:name>/<str:company>/<str:date>/<str:customer>/", views.delete, name="delete_sld"),
 
 ]

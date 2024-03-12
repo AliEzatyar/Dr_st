@@ -32,7 +32,6 @@ def main_page(request):
         except PageNotAnInteger:
             page = paginated.page(1)
         if requested_page:
-            print("page requested", requested_page, page)
             return render(request, "main__/portion_list.html", {"page": page})
     else:
         page = paginated.page(1)
@@ -225,3 +224,22 @@ def edit_sld(request, name, company, date, customer):
     else:
         sld_edit_frm = SldEdit(instance=pre_sld)
         return render(request, "sld/sld.html", {"form": sld_edit_frm, "instance": pre_sld, "edit": "1"})
+
+
+@login_required
+def delete(request, name, company, date=None, customer=None):
+    if customer:  # sld deletion
+        Sld.objects.get(name=name, company=company, date=date, customer=customer).delete()
+    elif date:  # bgt deleiton
+        bgt = Bgt.objects.get(name=name, company=company, date=date)
+        drug = Drg.objects.get(name=name, company=company)
+        # deleting related slds
+        if len(drug.bgts.all()) == 1:  # if it is the only remaining bgt
+            drug.delete()  # deletes both drug and bgt and sld
+        elif len(drug.bgts.all()) > 1: # if it is one of the collection
+            bgt.delete()
+            for sld in Sld.objects.filter(bgt=bgt):
+                sld.delete()
+    else:  # Drug deleltion
+        Drg.objects.get(name=name, company=company).delete()
+    return redirect("main:main")
