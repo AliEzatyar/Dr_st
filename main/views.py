@@ -59,7 +59,6 @@ def buy(request):
                 drug = Drg.objects.create(name=bgt.name, company=bgt.company,
                                           photo=bgt.photo, unique=bgt.name + "&&" + bgt.company,
                                           existing_amount=bgt.amount)
-
                 bgt.drug = drug
                 bgt.save()
             messages.success(request, 'Saving was successful')
@@ -181,12 +180,9 @@ def edit_bgt(request, name, company, date):
         bgt_edit_form = BgtEditForm(instance=deepcopy(pre_bgt), data=data)
         drug_edit_form = DrugEditForm(instance=deepcopy(pre_drug), data=data)
         if bgt_edit_form.is_valid() and drug_edit_form.is_valid():
-            # print("valdiation of both forms were down")
             new_bgt = bgt_edit_form.save(commit=False)
             new_drug = drug_edit_form.save(commit=False)
             new_drug.existing_amount = pre_drug.existing_amount - pre_bgt.amount + new_bgt.amount
-            # print(pre_drug.existing_amount, pre_bgt.amount, new_bgt.amount,"exis, pre.amount,new amount")
-            # print(new_drug.existing_amount)
             new_drug.save()
             new_bgt.drug = new_drug
             new_bgt.save()

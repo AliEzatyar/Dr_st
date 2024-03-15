@@ -237,7 +237,7 @@
         </label>
         <br>
         {% if edit %}
-            <input type="file" name="photo" accept="image/*" id="id_photo">
+            {{ form.photo }}
         {% else %}
             {{ form.photo }}
         {% endif %}
