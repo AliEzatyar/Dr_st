@@ -16,6 +16,10 @@
         <br>
         <span id="detailss">{{ drug.description|linebreaks }}</span>
 
-        <span id="buttons"><a style="color: white" href="{% url 'main:delete_drug' drug.name drug.company %}"> حذف دارو </a></span>
+        <form style="margin-top: 70%;zoom: 80%" method="post" action="{% url 'main:delete_drug' drug.name drug.company %}">
+            <input type="submit" value="حذف دارو">
+            {% csrf_token %}
+        </form>
+
     </div>
 {% endblock %}
