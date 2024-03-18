@@ -18,14 +18,15 @@ class Drug(models.Model):
     photo = models.ImageField(upload_to='', null=True, default="static\\UsedPhoto\\BedonAks.jpg")
     description = models.TextField(blank=True, default="بدون جزئیات")
     unique = models.CharField(max_length=60, blank=True, default="no name and company", unique=True)
+    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         indexes = [
+            models.Index(fields=['-created']),
             models.Index(fields=['name']),
             models.Index(fields=['company'])
         ]
-        ordering = [
-            'name']
+        ordering = ['name','-created']
 
     def __str__(self):
         return f"دارو با نام : {self.name} و با تعداد موجودی {self.existing_amount}"
@@ -38,7 +39,7 @@ class Bgt(models.Model):
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, related_name='bgts', blank=True)
     name = models.CharField(max_length=25, default='بدون نام')
     company = models.CharField(max_length=25, default='بدون شرکت')
-    bg_price = models.PositiveIntegerField(default=0)
+    price = models.DecimalField(default=0,decimal_places=2,max_digits=10)
     amount = models.PositiveSmallIntegerField(default=0)
     created = jmodels.jDateTimeField(auto_now_add=True)
     date = jmodels.jDateField(default=jmodels.timezone.now())
@@ -50,7 +51,7 @@ class Bgt(models.Model):
     sld_amount = models.PositiveSmallIntegerField(default=0, blank=True)  # this field increase in every sold
     baqi_amount = models.PositiveSmallIntegerField(default=0, blank=True)
     total = models.IntegerField(default=0)
-
+    available = models.BooleanField(default=True)
     class Meta:
         indexes = [
             models.Index(fields=['name']),
@@ -60,7 +61,7 @@ class Bgt(models.Model):
         ordering = ['-name']
 
     def __str__(self):
-        return f"{self.name} با تعداد {self.amount} خرید شد"
+        return f"{str(self.date)}|{self.amount}x|{self.price}"
 
     def get_absolute_url(self):
         print("asked url", self.name, self.company, str(self.date))
@@ -73,7 +74,7 @@ class Sld(models.Model):
     bgt = models.ForeignKey(Bgt, on_delete=models.CASCADE, related_name="slds")
     name = models.CharField(default='بدون نام', max_length=30)
     amount = models.PositiveSmallIntegerField(default=0)
-    price = models.PositiveIntegerField(default=0)
+    price = models.DecimalField(default=0,decimal_places=2,max_digits=10    )
     created = jmodels.jDateTimeField(auto_now_add=True)
     date = jmodels.jDateField(default=jmodels.timezone.now())
     company = models.CharField(default='بدون شرکت', max_length=30)

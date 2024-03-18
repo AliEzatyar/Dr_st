@@ -9,7 +9,7 @@ from main.models import Drug, Bgt, Sld
 
 @admin.register(Bgt)
 class BgtAdmin(admin.ModelAdmin):
-    list_display = ['name', 'company', 'bg_price', 'amount', 'date', 'bgt_bill', 'unique', 'currency']
+    list_display = ['name', 'company', 'price', 'amount','available', 'date', 'bgt_bill', 'unique', 'currency']
     list_filter = ['currency', 'date', 'company']
     ordering = [
         'name', 'bgt_bill', 'date'

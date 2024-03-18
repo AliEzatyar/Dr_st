@@ -7,6 +7,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from copy import deepcopy
 # Create your views here.
+from django.urls import reverse
 from django.views.decorators.http import require_POST
 
 from main.forms import BgtForm, SldForm, BgtEditForm, SldEdit, DrugEditForm
@@ -16,7 +17,7 @@ from main.models import Bgt as Bg
 
 @login_required
 def main_page(request):
-    drugs = Drg.objects.all()
+    drugs = Drg.objects.all().order_by('name')
     # making a paginator
     paginated = Paginator(drugs, 10)
     requested_page = None
@@ -102,7 +103,7 @@ def sell(request):
             bgt.sld_amount += sld_obj.amount
             bgt.baqi_amount -= cd['amount']  # updating baqi after each sell
             sld_obj.bgt = bgt
-            sld_obj.profite = (sld_obj.price - bgt.bg_price) * sld_obj.amount
+            sld_obj.profite = (sld_obj.price - bgt.price) * sld_obj.amount
             bgt.save()
             drug.save()
             sld_obj.save()
@@ -122,10 +123,11 @@ def sell(request):
 
 @login_required
 def get_drug_bgts(request):
+    """sends bgt details for sell template in bgt selector"""
     drug_name = request.GET['drug_name']
     company = request.GET['company']
-    bgts = Bg.objects.filter(name=drug_name, company=company)
-    bgts = [(drug.bg_price, drug.baqi_amount, str(drug.date), drug.currency) for drug in bgts]
+    bgts = Bg.objects.filter(name=drug_name, company=company, available=True)
+    bgts = [(drug.price, drug.baqi_amount, str(drug.date), drug.currency) for drug in bgts]
     return JsonResponse(bgts, safe=False)
 
 
@@ -226,16 +228,29 @@ def edit_sld(request, name, company, date, customer):
 def delete(request, name, company, date=None, customer=None):
     if customer:  # sld deletion
         Sld.objects.get(name=name, company=company, date=date, customer=customer).delete()
+        return redirect(reverse("main:show_list", args=["sld"]))
     elif date:  # bgt deleiton
         bgt = Bgt.objects.get(name=name, company=company, date=date)
         drug = Drg.objects.get(name=name, company=company)
         # deleting related slds
         if len(drug.bgts.all()) == 1:  # if it is the only remaining bgt
             drug.delete()  # deletes both drug and bgt and sld
-        elif len(drug.bgts.all()) > 1: # if it is one of the collection
+        elif len(drug.bgts.all()) > 1:  # if it is one of the collection
             bgt.delete()
             for sld in Sld.objects.filter(bgt=bgt):
                 sld.delete()
+        return redirect(reverse("main:show_list", args=["bgt"]))
     else:  # Drug deleltion
         Drg.objects.get(name=name, company=company).delete()
-    return redirect("main:main")
+        return redirect("main:main")
+
+
+@login_required
+def show_list(request, list_type):
+    print(list_type)
+    if list_type == "bgt":
+        bgts = Bgt.objects.all().order_by('-created')
+        return render(request, "bgt/list.html", {'bgts': bgts})
+    else:
+        slds = Sld.objects.all().order_by('-created')
+        return render(request, "sld/list.html", {'slds': slds})

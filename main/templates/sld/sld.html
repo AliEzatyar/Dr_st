@@ -65,13 +65,13 @@
     return html.reduce((acc, curr, i) => acc + args[i - 1] + curr);
     }
 
-    const bg_price = detail[0]
+    const price = detail[0]
     const baqi_amount = detail[1]
     const bg_date = detail[2]
     const currency = detail[3]
     bgts_selector.innerHTML += formatter`
     <option>
-        ${bg_date} | ${baqi_amount} | ${currency} | ${bg_price}
+        ${bg_date} | ${baqi_amount} | ${currency} | ${price}
     </option>
     `
     }))

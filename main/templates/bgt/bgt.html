@@ -5,9 +5,9 @@
 {% endblock %}
 {% block domready %}
     {#    <script>#}
-    document.getElementById('id_bg_price').addEventListener('keyup', function (e) {
+    document.getElementById('id_price').addEventListener('keyup', function (e) {
     var total = document.getElementById('id_total');
-    var pricee = document.getElementById('id_bg_price')
+    var pricee = document.getElementById('id_price')
     var amount = document.getElementById('id_amount')
     total.value = Number(pricee.value) * Number(amount.value)
     })
@@ -181,7 +181,7 @@
             <label>
                 قیمت خرید:
             </label>
-            {{ form.bg_price }}
+            {{ form.price }}
         </div>
     </div>
 

@@ -8,7 +8,7 @@ class BgtForm(forms.ModelForm):
     class Meta:
         model = Bgt
         fields = [  # fields which are not shown in template, 1- drug,2- sld_amount, 3- date, 4- unique
-            'name', 'amount', 'bg_price', 'company', 'date',
+            'name', 'amount', 'price', 'company', 'date',
             'photo', 'bgt_bill', 'total', 'currency',
         ]
 
@@ -24,8 +24,8 @@ class BgtForm(forms.ModelForm):
         amount = self.cleaned_data['amount']
         return abs(amount)
 
-    def clean_bg_price(self):
-        price = self.cleaned_data['bg_price']
+    def clean_price(self):
+        price = self.cleaned_data['price']
         return abs(price)
 
     def clean_name(self):
@@ -52,7 +52,7 @@ class BgtForm(forms.ModelForm):
         if amount == 0 or amount > 10000:
             raise ValidationError("مقدار خرید منطقی نیست")
 
-        price = int(cd['bg_price'])
+        price = int(cd['price'])
         if price > 15000 or price == 0:
             raise ValidationError('قیمت خرید منطقی نیست')
 
@@ -202,7 +202,7 @@ class BgtEditForm(forms.ModelForm):
     class Meta:
         model = Bgt
         fields = [
-            'name', 'amount', 'bg_price', 'company', 'date',
+            'name', 'amount', 'price', 'company', 'date',
             "photo", 'bgt_bill', 'total', 'currency',
         ]
 
@@ -242,7 +242,7 @@ class SldEdit(forms.ModelForm):
         """since we have got the instance before, we have the bgt related to this set before, so use it for calculating the profite"""
         # modifying unique, profite
         bgt = new_sld.bgt
-        new_sld.profite = new_sld.amount * (new_sld.price - bgt.bg_price)
+        new_sld.profite = new_sld.amount * (new_sld.price - bgt.price)
         new_sld.unique = str(new_sld.name) + "&&" + str(new_sld.company) + "&&" + str(
             new_sld.date) + "&&" + new_sld.customer
 

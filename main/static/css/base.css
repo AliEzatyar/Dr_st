@@ -1,6 +1,7 @@
-body{
+body {
     background-color: #c6f1ff;
 }
+
 #header {
     display: flex;
     direction: rtl;
@@ -12,7 +13,8 @@ body{
     border-bottom: 4px solid #3ddcb6;
     font-family: "2  Davat";
 }
-#welcm{
+
+#welcm {
     margin-right: 10%;
 }
 
@@ -43,7 +45,7 @@ ul.messages {
     list-style-type: none;
 }
 
-#logout{
+#logout {
     background-color: #a4f3ea;
     /*margin-right: 60%;*/
     /*position: fixed;*/
@@ -52,11 +54,13 @@ ul.messages {
     /*width: 30px;*/
     /*text-align: center;*/
 }
-#menu_bar{
+
+#menu_bar {
     display: flex;
 
 }
-#menu_item{
+
+#menu_item {
     all: unset;
     background-color: #3ddcb6;
     border-radius: 4px;
@@ -65,4 +69,47 @@ ul.messages {
     width: 100px;
     margin-right: 10px;
     text-align: center;
+}
+
+
+table {
+    direction: rtl;
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+}
+
+#table_title {
+    font-size: 25px;
+    font-family: "2  Davat";
+    margin: 1px 1px;
+    text-align: center;
+}
+#list_table thead{
+    background-color: darkcyan;
+}
+#list_table th {
+    border-bottom:  2px solid black;
+    border-top:  2px solid black;
+    color: pink;
+    font-family: "2  Davat";
+}
+
+table td{
+    padding: 5px;
+    text-align: center;
+    border-bottom: 1px solid black;
+    color: black;
+    font-family: "JetBrains Mono";
+}
+
+#delete_form{
+    padding: 1px 1px;
+    margin-bottom: 1px;
+    zoom: 110%;
+}
+#delete_form input{
+    background-color: red;
+    width: 50px;
+    padding: 1px;
 }

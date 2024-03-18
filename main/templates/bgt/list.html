@@ -1,0 +1,43 @@
+{% extends 'main__/base.html' %}
+{% block title %}خرید ها{% endblock %}
+{% block content %}
+    <h1 id="table_title">خرید ها</h1>
+    <table id="list_table">
+        <thead>
+        <tr>
+            <th>نام دارو</th>
+            <th>کمپنی دارو</th>
+            <th>مقدار خرید</th>
+            <th>قیمت خرید</th>
+            <th>مجموع پول</th>
+            <th>واحد پول</th>
+            <th>تاریخ خرید</th>
+            <th>بیل نمبر</th>
+            <th>تعداد باقی</th>
+            <th>حذف کردن</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for bgt in bgts %}
+            <tr>
+                <td>{{ bgt.name }}</td>
+                <td>{{ bgt.company }}</td>
+                <td>{{ bgt.amount }}</td>
+                <td>{{ bgt.price }}</td>
+                <td>{{ bgt.total }}</td>
+                <td>{{ bgt.currency }}</td>
+                <td>{{ bgt.date }}</td>
+                <td>{{ bgt.bgt_bill }}</td>
+                <td style="background-color: lightcoral">{{ bgt.baqi_amount }}/{{ bgt.amount }}</td>
+                <td>
+                    <form id="delete_form"  method="post" action="{% url 'main:delete_bgt' bgt.name bgt.company bgt.date %}">
+                        <input type="submit" value="حذف">
+                        {% csrf_token %}
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

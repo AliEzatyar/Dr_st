@@ -29,6 +29,8 @@ def sld_deletion(instance, *args, **kwargs):
     """instance is the object which is being deleted"""
     instance.bgt.sld_amount -= instance.amount
     instance.bgt.baqi_amount += instance.amount
+    if instance.bgt.available == False:
+        instance.bgt.available = True
     instance.drug.existing_amount += instance.amount
     instance.drug.save()
     instance.bgt.save()
@@ -40,18 +42,15 @@ def bgt_deletion(instance, *args, **kwargs):
     instance.drug.save()
 
 
-@receiver(pre_delete,sender = Drug)
-def drug_deletion(instance,*args , **kwargs):
+@receiver(pre_delete, sender=Drug)
+def drug_deletion(instance, *args, **kwargs):
     instance.photo.delete()
 
 
-
-
-
-
-
-
-
-
-
+@receiver(post_save, sender=Sld)
+def make_bgt_unavailable(instance, *args, **kwargs):
+    bgt = instance.bgt
+    if bgt.baqi_amount == 0:
+        bgt.available = False
+        bgt.save()
 
