@@ -12,10 +12,10 @@
 /**/
 #name_label {
     direction: rtl;
-    zoom: 200%;
-    right: 40%;
+    zoom: 120%;
+    right: 35%;
     position: fixed;
-    width: 10%;
+    width: 20%;
     text-align: center;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     top: 25%;
@@ -27,7 +27,7 @@
     position: fixed;
     direction: rtl;
     right: 25%;
-    zoom: 160%;
+    zoom: 135%;
     font-family: "2  Davat";
     border-bottom: 10px solid #65d7ea;
 }
@@ -39,4 +39,16 @@
     font-family: "2  Davat";
     zoom: 200%;
     right: 40%;
+}
+.det_options form{
+    float: left;
+}
+#forms form{
+    float: right;
+}
+#forms #delete_bgt{
+    margin-right: 25%;
+}
+#forms #see_bgts input{
+    width: 130%;
 }

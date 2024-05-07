@@ -9,6 +9,7 @@
     <title>{% block title %}{% endblock %}</title>
     {% block head %}{% endblock %}
 </head>
+
 <body>
 <div id="header">
     <div id="store_name">
@@ -20,8 +21,8 @@
             <span id="menu_item"><a href="{% url 'main:main' %}"> صفحه اصلی </a></span>
             <span id="menu_item"><a href="{% url 'main:show_list' 'bgt' %}">لیست خرید ها</a></span>
             <span id="menu_item"><a href="{% url 'main:show_list' 'sld' %}">لیست فروشات</a></span>
-
-            <span id="menu_item"><a href="#"> لیست مصارف </a></span>
+            <span id="menu_item"><a target="_blank" href="{% url 'main:sld' %}"> فروش دارو </a></span>
+            <span id="menu_item"><a target="_blank"  href="{% url 'main:bgt' %}"> خرید دارو </a></span>
             <span id="menu_item"><a href="#"> عواید </a></span>
 
         </div>
@@ -35,6 +36,17 @@
 
 </div>
 <hr>
+{% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+{#            this are message.tags : {{ message }}#}
+            <li class="{{ message.tags }}">
+                {{ message|safe }}
+                <a href="#" onclick="document.querySelector('.messages').remove()" class="close">X</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 <div id="contents">
     {% block content %}
     {% endblock %}

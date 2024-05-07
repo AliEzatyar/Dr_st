@@ -25,22 +25,28 @@
 
                 <td><a href="{{ sld.get_absolute_url }}">{{ sld.name }}</a></td>
                 <td><a href="{{ sld.get_absolute_url }}">{{ sld.company }}</a></td>
-                <td>{{ sld.amount }}</td>
+                <td>{{ sld.amount|floatformat:0 }}</td>
                 <td>{{ sld.price }}</td>
                 <td>{{ sld.total }}</td>
                 <td>{{ sld.currency }}</td>
-                <td style="background-color: lightcoral">
+                <td style="background-color: lightgoldenrodyellow">
                     <a href="{% url 'main:show_bgt_detail' sld.bgt.name sld.bgt.company sld.bgt.date %}">
                         {{ sld.bgt }}
                     </a>
                 </td>
-                <td>{{ sld.profite }}</td>
+                {% if sld.profite < 0 %}
+                    <td style="background-color: red;color: white">{{ sld.profite }}</td>
+                {% else %}
+                    <td>{{ sld.profite }}</td>
+                {% endif %}
+
                 <td>{{ sld.customer }}</td>
                 <td>{{ sld.date }}</td>
                 <td>{{ sld.sld_bill }}</td>
                 <td>
-                    <form id="delete_form" method="post" action="{% url 'main:delete_sld' sld.name sld.company sld.date sld.customer %}">
-                        <input type="submit" value="حذف">
+                    <form id="delete_form" method="post"
+                          action="{% url 'main:delete_sld' sld.name sld.company sld.date sld.customer %}">
+                        <input style="color: white" type="submit" value="حذف">
                         {% csrf_token %}
                     </form>
                 </td>

@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="{% static 'css/sld/sld.css' %}">
 {% endblock %}
 {% block domready %}
-    {#    <script>#}
+{#        <script>#}
     var bgts_selector = document.getElementById('bgt_selector')
 
     {% if not edit %}
@@ -91,10 +91,11 @@
         const company = e.target.value
         const name = document.getElementById("name_selector").value
         var img_preview = document.getElementById("img-preview")
-        console.log(name + company)
-        const photo_url = "{{ media_url }}" + name + "___" + company + ".jpg"
-        img_preview.src = photo_url
 
+        url = "{% url "main:set_sld_photo" %}"
+        fetch(url+"?name="+name+"&company="+company).then(url=> url.text()).then(photo_url =>{
+            img_preview.src = photo_url
+        })
         })
     {% endif %}
     {% if errors %}
@@ -243,7 +244,7 @@
 {% endif %}
 </form>
 {% if edit %}
-    <img id="img-preview" style="" src="{{ instance.bgt.photo.url }}">
+    <img id="img-preview" style="" src="{{ instance.drug.photo.url }}">
 {% else %}
     <img id="img-preview" style="" src="{% static 'UsedPhoto/BedonAks.jpg' %}">
 {% endif %}

@@ -9,16 +9,12 @@ def last_sale(drug_name, company):
     sales = Sld.objects.filter(name=drug_name, company=company).order_by('-date')
     if len(sales) > 0:
         sale = sales[0]
-        # return str(sale.date) + "__"+str(sale.amount)
         return sale
     else:
         return "ندارد"
 
 @register.simple_tag(name="last_bgt")
 def last_bgt(drug_name, company):
-    print(drug_name,company,"=====================")
-
     bgts = Bgt.objects.filter(name=drug_name,company=company)
     bgt = bgts.order_by("-date")[0]
     return bgt
-    # return str(bgt.date) + "__" + str(bgt.amount)

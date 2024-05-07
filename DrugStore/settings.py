@@ -131,7 +131,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 # this is needed to be added for media
-SESSION_COOKIE_AGE =1000
+SESSION_COOKIE_AGE =3600
 
 
 STATIC_URL = 'static/'

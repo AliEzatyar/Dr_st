@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 from django import forms
 from django.core.exceptions import ValidationError
 from main.models import Bgt, Drug
@@ -61,7 +63,7 @@ class BgtForm(forms.ModelForm):
             raise ValidationError("بیل نمبر درست نیست")
 
         unique = cd['name'].title() + "&&" + cd['company'].title() + "&&" + str(cd['date'])
-        if Bgt.objects.filter(unique=unique).count() > 0:
+        if Bgt.objects.filter(name=unique).count() > 0:
             raise ValidationError("این خرید قبلا ثبت شده است")
         return cd
 
@@ -80,7 +82,7 @@ class BgtForm(forms.ModelForm):
         """note: photos could be 2 type here, one is the default photo abs BedonAks, second: imageFiled object"""
         if type(photo) != str and photo != None:
             extension = str(photo.name).rsplit(".", 1)[1].lower()
-            new_photo_name = bgt.name + "___" + bgt.company + "." + extension
+            new_photo_name = bgt.name + "__" + bgt.company + "." + extension
             bgt.photo.name = new_photo_name
         if commit:
             bgt.save()
@@ -189,11 +191,18 @@ class DrugEditForm(forms.ModelForm):
 
     def save(self, commit=True):
         """makes the unique"""
+        print(self.cleaned_data,"=+-+_+_++_++_+__")
+        pre = deepcopy(Drug.objects.get(id=self.instance.id))
+        pre_photo_name = pre.photo.name
         new_drug = super().save(commit=False)
         new_drug.unique = new_drug.name + "&&" + new_drug.company
-        print("drug edited")
+        extension = str(new_drug.photo.name).rsplit(".", 1)[1].lower()
+        if pre_photo_name != new_drug.photo.name and new_drug.photo.name != "":
+            pre.photo.delete()
+            print("deleted")
+            new_drug.photo.name = "__".join(new_drug.unique.split("&&")) +"." +extension
+        print(new_drug.photo.name,"new photo")
         if commit:
-            print("new drug saved")
             new_drug.save()
         return new_drug
 
@@ -203,7 +212,7 @@ class BgtEditForm(forms.ModelForm):
         model = Bgt
         fields = [
             'name', 'amount', 'price', 'company', 'date',
-            "photo", 'bgt_bill', 'total', 'currency',
+            'bgt_bill', 'total', 'currency',
         ]
 
     def clean_name(self):

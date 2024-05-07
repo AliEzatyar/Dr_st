@@ -19,7 +19,7 @@
         <label>
             مقدار فروش:
         </label>
-        {{ sld.amount }}
+        {{ sld.amount|floatformat:1 }}
         <br>
         قیمت فروش:
         <span> {{ sld.price }} </span>
@@ -41,13 +41,18 @@
         {{ sld.total }}
         <span id="price_lbl"> {{ sld.currency }} </span>
         <br>
+        <div id="detail_buttons">
         <span id="buttons"><a href="{{ sld.bgt.get_absolute_url }}"> دیدن جزئیات خرید</a></span>
+        <form id="see_bgts" method="get" action="{% url 'main:show_specific' 'sld' %}">
+            <input type="hidden" value="{{ sld.name }}&&{{ sld.company }}" name="data">
+            <input type="submit" value="فروشات">
+        </form>
         <span id="buttons"><a
                 href="{% url 'main:edit_sld' sld.name sld.company sld.date sld.customer %}">ویرایش کردن</a> </span>
         <form method="post" action="{% url 'main:delete_sld' sld.name sld.company sld.date sld.customer %}">
             <input type="submit" value="حذف فروش">
             {% csrf_token %}
         </form>
-
+        </div>
     </div>
 {% endblock %}

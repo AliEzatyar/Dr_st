@@ -5,14 +5,14 @@
     <table id="list_table">
         <thead>
         <tr>
-            <th>نام دارو</th>
-            <th>کمپنی دارو</th>
+            <th><a href="{% url 'main:show_list' 'bgt' %}?sort_by=name">نام دارو</a></th>
+            <th><a href="{% url 'main:show_list' 'bgt' %}?sort_by=company">کمپنی دارو</a></th>
             <th>مقدار خرید</th>
             <th>قیمت خرید</th>
             <th>مجموع پول</th>
             <th>واحد پول</th>
-            <th>تاریخ خرید</th>
-            <th>بیل نمبر</th>
+            <th><a href="{% url 'main:show_list' 'bgt' %}?sort_by=date">تاریخ خرید</a></th>
+            <th><a href="{% url 'main:show_list' 'bgt' %}?sort_by=bgt_bill">بیل نمبر</a></th>
             <th>تعداد باقی</th>
             <th>حذف کردن</th>
 
@@ -21,18 +21,25 @@
         <tbody>
         {% for bgt in bgts %}
             <tr>
-                <td>{{ bgt.name }}</td>
-                <td>{{ bgt.company }}</td>
-                <td>{{ bgt.amount }}</td>
-                <td>{{ bgt.price }}</td>
-                <td>{{ bgt.total }}</td>
+                <td><a href="{{ bgt.get_absolute_url }}">{{ bgt.name }}</a></td>
+                <td><a href="{{ bgt.get_absolute_url }}">{{ bgt.company }}</a></td>
+                <td>{{ bgt.amount|floatformat:0 }}</td>
+                <td>{{ bgt.price|floatformat:1 }}</td>
+                <td>{{ bgt.total|floatformat:1 }}</td>
                 <td>{{ bgt.currency }}</td>
                 <td>{{ bgt.date }}</td>
                 <td>{{ bgt.bgt_bill }}</td>
-                <td style="background-color: lightcoral">{{ bgt.baqi_amount }}/{{ bgt.amount }}</td>
+                <td style="background-color: lightgoldenrodyellow">
+                    <form id="see_bgts" method="get" action="{% url 'main:show_specific' 'sld' %}">
+                        <input type="hidden" value="{{ bgt.name }}&&{{ bgt.company }}" name="data">
+                        <input type="submit" value="{{ bgt.baqi_amount|floatformat:0 }}/{{ bgt.amount|floatformat:0 }}">
+                    </form>
+
+                </td>
                 <td>
-                    <form id="delete_form"  method="post" action="{% url 'main:delete_bgt' bgt.name bgt.company bgt.date %}">
-                        <input type="submit" value="حذف">
+                    <form id="delete_form" method="post"
+                          action="{% url 'main:delete_bgt' bgt.name bgt.company bgt.date %}">
+                        <input style="color: white" type="submit" value="حذف">
                         {% csrf_token %}
                     </form>
                 </td>

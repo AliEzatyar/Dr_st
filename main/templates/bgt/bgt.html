@@ -4,7 +4,7 @@
     <link type="text/css" rel="stylesheet" href="{% static "css/bgt/bgt.css" %}">
 {% endblock %}
 {% block domready %}
-    {#    <script>#}
+{#        <script>#}
     document.getElementById('id_price').addEventListener('keyup', function (e) {
     var total = document.getElementById('id_total');
     var pricee = document.getElementById('id_price')
@@ -76,16 +76,11 @@
     var new_drug = document.getElementById("new_drug")
     const company = e.target.value
     const drug_name = name_selector.value
-    photo_url = "{{ media_url }}" + drug_name + "___" + company + ".jpg"
-    fetch(photo_url).then(response => response.text()).then(html => {
-    if (html.search("Page not found") == -1) {
-    img_preview.src = photo_url
-
-    } else {
-    img_preview.src = "{% static 'UsedPhoto/BedonAks.jpg' %}"
-
-    }
-    })
+    var url = "{% url "main:set_sld_photo" %}"
+        fetch(url+"?name="+drug_name
+            +"&company="+company).then(url=> url.text()).then(photo_url =>{
+            img_preview.src = photo_url
+        })
     })
     <!--when new drug is being added -->
     file_input.addEventListener('change', function () {
@@ -236,17 +231,17 @@
             عکس دارو:
         </label>
         <br>
-        {% if edit %}
+        {% if not edit %}
             {{ form.photo }}
         {% else %}
-            {{ form.photo }}
+            <input type="file" name="photo" accept="image/*" id="id_photo">
         {% endif %}
     </div>
     {% csrf_token %}
 </div>
 </form>
 {% if edit %}
-    <img id="img-preview" src="{{ instance.photo.url }}">
+    <img id="img-preview" src="{{ instance.drug.photo.url }}">
 {% else %}
     <img id="img-preview" src="{% static 'UsedPhoto/BedonAks.jpg' %}">
 {% endif %}

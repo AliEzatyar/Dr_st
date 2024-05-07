@@ -4,7 +4,7 @@ from django.core.files.base import ContentFile
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db import models
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from copy import deepcopy
 # Create your views here.
 from django.urls import reverse
@@ -56,16 +56,16 @@ def buy(request):
                 bgt.save()
                 drug.save()
             except Drg.DoesNotExist:
-
                 drug = Drg.objects.create(name=bgt.name, company=bgt.company,
                                           photo=bgt.photo, unique=bgt.name + "&&" + bgt.company,
                                           existing_amount=bgt.amount)
                 bgt.drug = drug
                 bgt.save()
-            messages.success(request, 'Saving was successful')
-            return render(request, 'bgt/bgt.html', {'form': BgtForm(), "media_url": media_url, "drugs": drugs})
+            messages.success(request, "جزئیات خرید موفقانه ثبت گردید.")
+            return render(request, 'bgt/bgt.html', {'form': BgtForm(data=request.POST), "media_url": media_url, "drugs": drugs})
         else:
             errors = form.error_class.as_text(form.errors).split("\n")[1:]  # taking out erros
+            messages.error(request,"خطا در ثبت معلومات!")
             return render(request, 'bgt/bgt.html',
                           {'form': form, "drugs": drugs, "media_url": media_url, 'errors': errors})
     else:
@@ -108,11 +108,18 @@ def sell(request):
             drug.save()
             sld_obj.save()
             drugs = [drug.name for drug in Drg.objects.all()]
-            messages.success(request, "معلومات موفقانه ذخیره گردید")
-            return render(request, 'sld/sld.html', {'form': SldForm(), "media_url": media_url, 'drugs': drugs})
+            messages.success(request, "جزئیات فروش موفقانه ثبت گردید.")
+            return render(request,
+                          'sld/sld.html',
+                          {
+                           'form': SldForm(data=request.POST),
+                           'media_url': media_url,
+                           'drugs': drugs,
+                           })
         else:
             drugs = [drug.name for drug in Drg.objects.all()]
             errors = form.error_class.as_text(form.errors).split("\n")[1:]  # taking out erros
+            messages.error(request,"خطا در ثبت معلومات!")
             return render(request, 'sld/sld.html',
                           {'form': form, "drugs": drugs, "media_url": media_url, 'errors': errors})
     else:
@@ -138,6 +145,14 @@ def get_drug_companies(request):
     companies = [drug.company for drug in Drg.objects.filter(name=drug_name)]
     return JsonResponse(safe=False, data=companies)
 
+@login_required
+def set_sld_photo(request):
+    data = request.GET
+    print("seltsdafkadslkfjdasklfjlasdkjflaksd",)
+    name = data['name']
+    company = data['company']
+    drug = Drg.objects.get(name=name,company=company)
+    return HttpResponse(drug.photo.url)
 
 @login_required
 def show_drug_detail(request, name, company):
@@ -170,7 +185,8 @@ def show_sld_detail(request, name, company, date, customer):
 
 @login_required
 def edit_bgt(request, name, company, date):
-    """things to cnsider here
+    """
+        things to cnsider here
         * drug uniqe , name , existing amount could change since being update
         * bgt bqi and uniques + could be change
     """
@@ -179,15 +195,17 @@ def edit_bgt(request, name, company, date):
     pre_bgt = deepcopy(Bgt.objects.get(unique=pre_bgt_unique))
     pre_drug = deepcopy(pre_bgt.drug)
     if request.method == "POST":
-        bgt_edit_form = BgtEditForm(instance=deepcopy(pre_bgt), data=data)
-        drug_edit_form = DrugEditForm(instance=deepcopy(pre_drug), data=data)
+        bgt_edit_form = BgtEditForm(files=request.FILES, instance=deepcopy(pre_bgt), data=data)
+        drug_edit_form = DrugEditForm(files=request.FILES,instance=deepcopy(pre_drug), data=data)
         if bgt_edit_form.is_valid() and drug_edit_form.is_valid():
             new_bgt = bgt_edit_form.save(commit=False)
             new_drug = drug_edit_form.save(commit=False)
             new_drug.existing_amount = pre_drug.existing_amount - pre_bgt.amount + new_bgt.amount
+            new_bgt.baqi_amount +=   new_bgt.amount - pre_bgt.amount
             new_drug.save()
             new_bgt.drug = new_drug
             new_bgt.save()
+            messages.success(request,"تغییرات موفقانه ثبت گردید.")
             return redirect(new_bgt.get_absolute_url())
         else:
             return HttpResponse("invalid", bgt_edit_form.errors)
@@ -247,10 +265,26 @@ def delete(request, name, company, date=None, customer=None):
 
 @login_required
 def show_list(request, list_type):
-    print(list_type)
+    data = request.GET
+    type = data.get("sort_by","-date")
     if list_type == "bgt":
-        bgts = Bgt.objects.all().order_by('-created')
+        bgts = Bgt.objects.all().order_by(type)
         return render(request, "bgt/list.html", {'bgts': bgts})
     else:
-        slds = Sld.objects.all().order_by('-created')
+        slds = Sld.objects.all().order_by(type)
         return render(request, "sld/list.html", {'slds': slds})
+
+
+@login_required
+def show_specific(request, list_type):
+    data = request.GET['data'].split("&&")
+    name, company = data[0], data[1]
+    if list_type == "bgt":
+        bgts = Bgt.objects.filter(name=name,
+                                  company=company).order_by('-date')
+        return render(request, "bgt/list.html", {'bgts': bgts})
+    else:
+        slds = Sld.objects.filter(name=name,
+                                  company=company).order_by('-date')
+        return render(request, "sld/list.html", {'slds': slds})
+
