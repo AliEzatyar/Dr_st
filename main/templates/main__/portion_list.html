@@ -43,7 +43,7 @@
     <div id="drug">
         <a href="{{ drug.get_absolute_url }}">
 
-            {% thumbnail drug.photo 199x200 crop="smart" as img %}
+            {% thumbnail drug.photo 199x200 crop="smart" quality=100 as img %}
             {% if img %}
                 <img id="photo" src="{{ img.url }} " alt="NO Photo">
             {% else %}

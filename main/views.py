@@ -9,15 +9,17 @@ from copy import deepcopy
 # Create your views here.
 from django.urls import reverse
 from django.views.decorators.http import require_POST
-
+from .accessories import resize
 from main.forms import BgtForm, SldForm, BgtEditForm, SldEdit, DrugEditForm
 from main.models import Drug as Drg, Bgt, Sld
 from main.models import Bgt as Bg
+from django.db.backends.sqlite3.base import IntegrityError
 
 
 @login_required
 def main_page(request):
     drugs = Drg.objects.all().order_by('name')
+    # print(drugs[0].photo.path,"---------------++++++++++++++")
     # making a paginator
     paginated = Paginator(drugs, 10)
     requested_page = None
@@ -39,6 +41,7 @@ def main_page(request):
         return render(request, 'main__/home.html', {'user': request.user, 'page': page})
 
 
+
 @login_required
 def buy(request):
     drugs = [drug.name for drug in Drg.objects.all()]
@@ -51,10 +54,11 @@ def buy(request):
             try:
                 drug = Drg.objects.get(unique=bgt.name + "&&" + bgt.company)
                 bgt.drug = drug
-
                 drug.existing_amount += bgt.amount  # though we can get it by calling
+
                 bgt.save()
                 drug.save()
+                print("resize doen--------------________++++")
             except Drg.DoesNotExist:
                 drug = Drg.objects.create(name=bgt.name, company=bgt.company,
                                           photo=bgt.photo, unique=bgt.name + "&&" + bgt.company,
@@ -62,10 +66,11 @@ def buy(request):
                 bgt.drug = drug
                 bgt.save()
             messages.success(request, "جزئیات خرید موفقانه ثبت گردید.")
-            return render(request, 'bgt/bgt.html', {'form': BgtForm(data=request.POST), "media_url": media_url, "drugs": drugs})
+            return render(request, 'bgt/bgt.html',
+                          {'form': BgtForm(data=request.POST), "media_url": media_url, "drugs": drugs})
         else:
             errors = form.error_class.as_text(form.errors).split("\n")[1:]  # taking out erros
-            messages.error(request,"خطا در ثبت معلومات!")
+            messages.error(request, "خطا در ثبت معلومات!")
             return render(request, 'bgt/bgt.html',
                           {'form': form, "drugs": drugs, "media_url": media_url, 'errors': errors})
     else:
@@ -112,14 +117,14 @@ def sell(request):
             return render(request,
                           'sld/sld.html',
                           {
-                           'form': SldForm(data=request.POST),
-                           'media_url': media_url,
-                           'drugs': drugs,
-                           })
+                              'form': SldForm(data=request.POST),
+                              'media_url': media_url,
+                              'drugs': drugs,
+                          })
         else:
             drugs = [drug.name for drug in Drg.objects.all()]
             errors = form.error_class.as_text(form.errors).split("\n")[1:]  # taking out erros
-            messages.error(request,"خطا در ثبت معلومات!")
+            messages.error(request, "خطا در ثبت معلومات!")
             return render(request, 'sld/sld.html',
                           {'form': form, "drugs": drugs, "media_url": media_url, 'errors': errors})
     else:
@@ -145,14 +150,16 @@ def get_drug_companies(request):
     companies = [drug.company for drug in Drg.objects.filter(name=drug_name)]
     return JsonResponse(safe=False, data=companies)
 
+
 @login_required
 def set_sld_photo(request):
     data = request.GET
-    print("seltsdafkadslkfjdasklfjlasdkjflaksd",)
+    print("seltsdafkadslkfjdasklfjlasdkjflaksd", )
     name = data['name']
     company = data['company']
-    drug = Drg.objects.get(name=name,company=company)
+    drug = Drg.objects.get(name=name, company=company)
     return HttpResponse(drug.photo.url)
+
 
 @login_required
 def show_drug_detail(request, name, company):
@@ -196,16 +203,16 @@ def edit_bgt(request, name, company, date):
     pre_drug = deepcopy(pre_bgt.drug)
     if request.method == "POST":
         bgt_edit_form = BgtEditForm(files=request.FILES, instance=deepcopy(pre_bgt), data=data)
-        drug_edit_form = DrugEditForm(files=request.FILES,instance=deepcopy(pre_drug), data=data)
+        drug_edit_form = DrugEditForm(files=request.FILES, instance=deepcopy(pre_drug), data=data)
         if bgt_edit_form.is_valid() and drug_edit_form.is_valid():
             new_bgt = bgt_edit_form.save(commit=False)
             new_drug = drug_edit_form.save(commit=False)
             new_drug.existing_amount = pre_drug.existing_amount - pre_bgt.amount + new_bgt.amount
-            new_bgt.baqi_amount +=   new_bgt.amount - pre_bgt.amount
+            new_bgt.baqi_amount += new_bgt.amount - pre_bgt.amount
             new_drug.save()
             new_bgt.drug = new_drug
             new_bgt.save()
-            messages.success(request,"تغییرات موفقانه ثبت گردید.")
+            messages.success(request, "تغییرات موفقانه ثبت گردید.")
             return redirect(new_bgt.get_absolute_url())
         else:
             return HttpResponse("invalid", bgt_edit_form.errors)
@@ -266,7 +273,7 @@ def delete(request, name, company, date=None, customer=None):
 @login_required
 def show_list(request, list_type):
     data = request.GET
-    type = data.get("sort_by","-date")
+    type = data.get("sort_by", "-date")
     if list_type == "bgt":
         bgts = Bgt.objects.all().order_by(type)
         return render(request, "bgt/list.html", {'bgts': bgts})
@@ -287,4 +294,3 @@ def show_specific(request, list_type):
         slds = Sld.objects.filter(name=name,
                                   company=company).order_by('-date')
         return render(request, "sld/list.html", {'slds': slds})
-

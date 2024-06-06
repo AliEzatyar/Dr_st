@@ -85,7 +85,12 @@ def set_defualt_photo(instance,*args,**kwargs):
         with open("BedonAks.jpg","rb") as file:
             instance.photo.save(instance.name+"__"+instance.company+".jpg",file,save=True)
 
-
+@receiver(post_save,sender=Drug)
+def resize_photo(instance,*args,**kwargs):
+    import os
+    from main.accessories import resize
+    if (os.path.getsize(instance.photo.path)//1024 > 500):
+        resize(instance.photo.path,(550,700),100)
 
 
 

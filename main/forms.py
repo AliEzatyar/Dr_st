@@ -41,7 +41,7 @@ class BgtForm(forms.ModelForm):
     def clean(self):
         cd = super().clean()
         """raising validation errors"""
-        print(cd)
+        # print(cd)
         name = cd['name']
         if name == "انتخاب دارو":
             raise ValidationError("لطفا نام دارو را درج کنید")
@@ -63,7 +63,7 @@ class BgtForm(forms.ModelForm):
             raise ValidationError("بیل نمبر درست نیست")
 
         unique = cd['name'].title() + "&&" + cd['company'].title() + "&&" + str(cd['date'])
-        if Bgt.objects.filter(name=unique).count() > 0:
+        if Bgt.objects.filter(unique=unique).count() > 0:
             raise ValidationError("این خرید قبلا ثبت شده است")
         return cd
 

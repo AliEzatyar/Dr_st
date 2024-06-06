@@ -6,12 +6,14 @@ from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django_jalali.db import models as jmodels
+from django.contrib.auth.models import User
 
 
 # Create your models here.
 
 
 class Drug(models.Model):
+
     name = models.CharField(max_length=25, default="بدون نام")
     company = models.CharField(max_length=25)
     existing_amount = models.DecimalField(default=0,max_digits=10,decimal_places=2)
@@ -34,8 +36,9 @@ class Drug(models.Model):
     def get_absolute_url(self):
         return reverse("main:show_drug_detail", args=[self.name, self.company])
 
-
+Ali_Ahmadyar = User.objects.get(username="Ali_Ahmadyar")
 class Bgt(models.Model):
+    Buyer = models.ForeignKey(User,default=Ali_Ahmadyar.id,on_delete=models.CASCADE,related_name="purchases")
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE, related_name='bgts', blank=True)
     name = models.CharField(max_length=25, default='بدون نام')
     company = models.CharField(max_length=25, default='بدون شرکت')
@@ -43,7 +46,6 @@ class Bgt(models.Model):
     amount = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     created = jmodels.jDateTimeField(auto_now_add=True)
     date = jmodels.jDateField(default=jmodels.timezone.now())
-
     photo = models.ImageField(upload_to='drugs', null=True, blank=True)
     bgt_bill = models.PositiveSmallIntegerField(default=0)
     unique = models.CharField(blank=True, unique=True, max_length=100)
@@ -70,9 +72,10 @@ class Bgt(models.Model):
 
 
 class Sld(models.Model):
+    seller = models.ForeignKey(User,default=Ali_Ahmadyar.id,on_delete=models.CASCADE,related_name="sales")
     drug = models.ForeignKey(Drug, on_delete=models.CASCADE,
                              related_name='slds')  # we should also take out its bgts using this filed
-    bgt = models.ForeignKey(Bgt, on_delete=models.CASCADE, related_name="slds")
+    bgt = models.ForeignKey(Bgt, on_delete=models.CASCADE, related_name="sales")
     name = models.CharField(default='بدون نام', max_length=30)
     amount = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     price = models.DecimalField(default=0, decimal_places=2, max_digits=10)
