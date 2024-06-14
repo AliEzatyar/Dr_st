@@ -6,7 +6,90 @@
 {% endblock %}
 
 {% block style %}
-    <link rel="stylesheet" href="{% static 'css/sld/sld.css' %}">
+<style>
+  /* General Styles */
+  body {
+
+    font-family: 'Arial', sans-serif;
+
+    direction: rtl; /* Added this line to set the text direction to right-to-left */
+    text-align: right; /* Added this line to align the text to the right */
+  }
+  body form{
+    margin: 5%;
+    padding: 5%;
+  }
+  body img{
+      width: 40%;
+      height: 40%;
+  }
+
+  /* Container Styles */
+  #buy_form_fields {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* Form Styles */
+  .pair {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-direction: row-reverse; /* Added this line to reverse the order of the form fields */
+  }
+
+  .pair > div {
+    flex-basis: 48%;
+  }
+
+  label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+  #sell_header{
+      text-align: center;
+      color: #007bff;
+  }
+  input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  #submitt {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  /* Image Styles */
+  #img-preview {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 767px) {
+    .pair {
+      flex-direction: column; /* Added this line to reverse the order of the form fields on smaller screens */
+    }
+
+    .pair > div {
+      flex-basis: auto;
+    }
+  }
+</style>
+
+
 {% endblock %}
 {% block domready %}
 {#        <script>#}
@@ -240,7 +323,7 @@
     <input type="hidden" value="{{ instance.unique }}">
     <input class="submitt_edit" type="submit" value="ذخیره تغییرات">
 {% else %}
-    <input class="submitt" type="submit" value="ثبت فروش">
+    <input style="background-color: #4ac1f7;width: 40%;margin-right: 25%" type="submit" value="ثبت فروش">
 {% endif %}
 </form>
 {% if edit %}

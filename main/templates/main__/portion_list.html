@@ -1,80 +1,112 @@
 {% load static %}
 {% load thumbnail %}
 {% load main_tags %}
+
 <style>
-
-    #detail_label {
-        background-color: #46c646;
+    /* Global Styles */
+    body {
+        font-family: 'Vazir', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
         direction: rtl;
     }
 
-    #details {
-        display: flow;
-        color: indigo;
-        margin: 0px 0px 0px 1px;
-        direction: rtl;
-        text-align: center;
-        font-family: "2  Davat";
-        font-size: 16px;
-        background-color: #55bbdd;
-        border-radius: 4px;
+    /* Drug Container Styles */
+    .drug-container {
+        display: inline-block;
+        width: 100%;
+        max-width: 250px;
+        margin: 20px;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
 
-    #drug {
-        float: left;
-        width: 200px;
+    .drug-container:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .drug-image {
+        width: 100%;
         height: 300px;
-        margin: 10px 3% 5% 10px;
-        border-top: 6px solid #55bbdd;
-        border-radius: 4px;
-        background-color: #55bbdd;
+        object-fit: cover;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
     }
 
-    #bedon {
-        width: 200px;
-        height: 200px;
+    .drug-details {
+        padding: 20px;
+        text-align: right;
     }
 
-    #photo {
-        border-radius: 4px;
+    .drug-details h3 {
+        margin-top: 0;
+        color: #333;
+    }
+
+    .drug-details p {
+        margin: 5px 0;
+        color: #666;
+    }
+
+    .drug-details a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .drug-details a:hover {
+        text-decoration: underline;
+    }
+
+    /* Responsive Styles */
+    @media (max-width: 767px) {
+        .drug-container {
+            max-width: 100%;
+            margin: 10px;
+        }
+
+        .drug-image {
+            height: 200px;
+        }
+    }
+
+    @media (min-width: 768px) and (max-width: 1199px) {
+        .drug-container {
+            max-width: 45%;
+        }
+
+        .drug-image {
+            height: 250px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .drug-container {
+            max-width: 30%;
+        }
+
+        .drug-image {
+            height: 300px;
+        }
     }
 </style>
-{% for drug in page %}
-    <div id="drug">
-        <a href="{{ drug.get_absolute_url }}">
 
-            {% thumbnail drug.photo 199x200 crop="smart" quality=100 as img %}
+{% for drug in page %}
+    <div class="drug-container">
+        <a href="{{ drug.get_absolute_url }}">
+            {% thumbnail drug.photo 300x400 crop="smart" quality=100 as img %}
             {% if img %}
-                <img id="photo" src="{{ img.url }} " alt="NO Photo">
+                <img class="drug-image" src="{{ img.url }}" alt="{{ drug.name }}">
             {% else %}
-                <img id="bedon" alt="Bedon not fund" src="{% static 'UsedPhoto/BedonAks.jpg' %}">
+                <img class="drug-image" src="{% static 'UsedPhoto/BedonAks.jpg' %}" alt="No Photo">
             {% endif %}
         </a>
-        <ul id="details">
-            <li>
-                نام دارو:
-                {{ drug.name }}
-            </li>
-            <li>
-                شرکت:
-                {{ drug.company }}
-            </li>
-            <li style="background-color: white">
-                تعداد موجودی:
-                {{ drug.existing_amount }}
-            </li>
-            <li>
-                آخرین خرید:
-                {% last_bgt drug.name drug.company as last_bgt %}
-                <a href="{{ last_bgt.get_absolute_url }}">{{ last_bgt.date }}</a>
-            </li>
-            <li>
-                آخرین فروش:
-                {% last_sale drug.name drug.company as last_sld %}
-                <a href="{{ last_sld.get_absolute_url }}">
-                    {% if last_sld.date %}{{ last_sld.date }}{% else %}{{ last_sld }}{% endif %}</a>
-            </li>
-        </ul>
+        <div class="drug-details">
+            <h3>{{ drug.name }}</h3>
+            <p>شرکت: {{ drug.company }}</p>
+            <p style="background-color: #e6f7ff; padding: 5px; border-radius: 5px;">تعداد موجودی: {{ drug.existing_amount }}</p>
+            <p>آخرین خرید: <a href="{{ last_bgt.get_absolute_url }}">{% last_bgt drug.name drug.company as last_bgt %}{{ last_bgt.date }}</a></p>
+            <p>آخرین فروش: <a href="{{ last_sld.get_absolute_url }}">{% last_sale drug.name drug.company as last_sld %}{% if last_sld.date %}{{ last_sld.date }}{% else %}{{ last_sld }}{% endif %}</a></p>
+        </div>
     </div>
-
 {% endfor %}

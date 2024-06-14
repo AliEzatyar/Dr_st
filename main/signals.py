@@ -1,13 +1,17 @@
 import os
+from io import BytesIO
 
 from django.core.signals import request_started, request_finished
 from django.db.backends.signals import connection_created
 from django.db.models.signals import pre_save, post_save, pre_delete
-from django.dispatch import receiver
+from django.dispatch import receiver, Signal
 
 from DrugStore import settings
 from DrugStore.settings import BASE_DIR
 from .models import Sld, Bgt, Drug
+from django.template.loader import render_to_string
+import weasyprint
+from django.core.mail import EmailMessage
 
 
 # @receiver(request_started)
@@ -56,8 +60,8 @@ def make_bgt_unavailable(instance, *args, **kwargs):
         bgt.save()
 
 
-@receiver(post_save,sender=Bgt)
-def rename_slds(instance,*args,**kwargs):
+@receiver(post_save, sender=Bgt)
+def rename_slds(instance, *args, **kwargs):
     """
         When a bgt is renamed, all related slds should be renamed too
     """
@@ -74,28 +78,26 @@ def rename_slds(instance,*args,**kwargs):
             sld.company = bgt.company
             sld.save()
 
-@receiver(post_save,sender=Drug)
-def set_defualt_photo(instance,*args,**kwargs):
+
+@receiver(post_save, sender=Drug)
+def set_defualt_photo(instance, *args, **kwargs):
     """
         if no photo was supplied initially for a drug, set BedonAks
     """
-    if instance.photo in (None,""):
-        print(settings.MEDIA_ROOT+"drugs")
-        os.chdir(settings.MEDIA_ROOT+"drugs/")
-        with open("BedonAks.jpg","rb") as file:
-            instance.photo.save(instance.name+"__"+instance.company+".jpg",file,save=True)
+    if instance.photo in (None, ""):
+        print(settings.MEDIA_ROOT + "drugs")
+        os.chdir(settings.MEDIA_ROOT + "drugs/")
+        with open("BedonAks.jpg", "rb") as file:
+            instance.photo.save(instance.name + "__" + instance.company + ".jpg", file, save=True)
 
-@receiver(post_save,sender=Drug)
-def resize_photo(instance,*args,**kwargs):
+
+@receiver(post_save, sender=Drug)
+def resize_photo(instance, *args, **kwargs):
     import os
     from main.accessories import resize
-    if (os.path.getsize(instance.photo.path)//1024 > 500):
-        resize(instance.photo.path,(550,700),100)
-
-
-
-
-
-
-
+    try:
+        if (os.path.getsize(instance.photo.path) // 1024 > 500):
+            resize(instance.photo.path, (550, 700), 100)
+    except:
+        pass
 

@@ -1,56 +1,135 @@
-{% load static %}
-
 <head>
-    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {% block style %}
-
     {% endblock %}
-
     <title>{% block title %}{% endblock %}</title>
     {% block head %}{% endblock %}
+    <style>
+        /* Persian Font */
+        @font-face {
+            font-family: 'Persian';
+            src: url('/static/fonts/Vazir.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body {
+            font-family: 'Persian', sans-serif;
+        }
+        #header{
+
+        }
+        /* Responsive Styles */
+        @media (max-width: 767px) {
+            #header {
+                background-color: #333;
+                color: #fff;
+                padding: 10px;
+                border-bottom: 1px solid #555;
+            }
+
+            #store_name {
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            #menu_bar {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 10px;
+            }
+
+            #menu_item a {
+                color: #fff;
+                text-decoration: none;
+                padding: 5px 10px;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+
+            #menu_item a:hover {
+                background-color: #555;
+            }
+
+            #welcm {
+                text-align: center;
+                margin-top: 10px;
+                color: #ccc;
+            }
+
+        }
+
+        @media (min-width: 768px) {
+            #header {
+                background-color: #333;
+                color: #fff;
+                padding: 20px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid #555;
+            }
+
+            #store_name {
+                font-size: 24px;
+                font-weight: bold;
+            }
+
+            #menu_bar {
+                display: flex;
+            }
+
+            #menu_item a {
+                color: #fff;
+                text-decoration: none;
+                padding: 10px 15px;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+
+            #menu_item a:hover {
+                background-color: #555;
+            }
+
+            #welcm {
+                text-align: right;
+                margin-top: 0;
+                color: #ccc;
+            }
+
+            /* Diff Element Styles */
+            .diff {
+                background-color: #f8f8f8;
+                border: 1px solid #ddd;
+                padding: 15px;
+                margin-bottom: 15px;
+                border-radius: 5px;
+            }
+
+            .diff span {
+                font-size: 14px;
+                padding: 3px 8px;
+                border-radius: 4px;
+                background-color: #f1f1f1;
+                display: inline-block;
+                margin: 3px;
+            }
+            #delete_form input{
+                width: 100%;
+                height: 100%;
+                background-color: red;
+            }
+        }
+    </style>
 </head>
 
 <body>
-<div id="header">
-    <div id="store_name">
-        ادویه فروشی احمدیار
+    {% include 'main__/header.html' %}
+    <div id="contents">
+        {% block content %}
+        {% endblock %}
     </div>
-
-    {% if request.user.is_authenticated %}
-        <div id="menu_bar">
-            <span id="menu_item"><a href="{% url 'main:main' %}"> صفحه اصلی </a></span>
-            <span id="menu_item"><a href="{% url 'main:show_list' 'bgt' %}">لیست خرید ها</a></span>
-            <span id="menu_item"><a href="{% url 'main:show_list' 'sld' %}">لیست فروشات</a></span>
-            <span id="menu_item"><a target="_blank" href="{% url 'main:sld' %}"> فروش دارو </a></span>
-            <span id="menu_item"><a target="_blank"  href="{% url 'main:bgt' %}"> خرید دارو </a></span>
-            <span id="menu_item"><a href="#"> عواید </a></span>
-
-        </div>
-        <div id="welcm">
-            خوش آمدید
-            {{ request.user }}
-            <br>
-            <span><a href="{% url 'a_ccount:log_out' %}">خارج شدن</a></span>
-        </div>
-    {% endif %}
-
-</div>
-<hr>
-{% if messages %}
-    <ul class="messages">
-        {% for message in messages %}
-{#            this are message.tags : {{ message }}#}
-            <li class="{{ message.tags }}">
-                {{ message|safe }}
-                <a href="#" onclick="document.querySelector('.messages').remove()" class="close">X</a>
-            </li>
-        {% endfor %}
-    </ul>
-{% endif %}
-<div id="contents">
-    {% block content %}
-    {% endblock %}
-</div>
 </body>
 <script>
     document.addEventListener('DOMContentLoaded', function (e) {

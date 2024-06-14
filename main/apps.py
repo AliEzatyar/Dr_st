@@ -13,6 +13,8 @@ class MainConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'main'
     def ready(self):
+        os.environ["PATH"] = r'C:\Program Files\GTK3-Runtime Win64\bin' + os.pathsep+ os.environ.get("PATH","")
+        print("--------------------------")
         # from .signals import started, created,finished
         from .signals import bgt_deletion,sld_deletion,drug_deletion
         # def delete_photos():

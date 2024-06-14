@@ -13,7 +13,7 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent # creats a dynammic path to use '/'
 LOGIN_URL = 'a_ccount:login_user'
 LOGIN_REDIRECT_URL = 'main:main'
 
@@ -135,6 +135,7 @@ SESSION_COOKIE_AGE =3600
 
 
 STATIC_URL = 'static/'
+STATIC_ROOT  = BASE_DIR  / "main/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -145,3 +146,10 @@ if DEBUG:
     import mimetypes
     mimetypes.add_type('application/javascript', '.js', True)
     mimetypes.add_type('text/css', '.css', True)
+
+# email configuration
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_HOST_USER = "tareeqshah5@gmail.com"
+EMAIL_HOST_PASSWORD = "bedz djgn edvf upzg"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True

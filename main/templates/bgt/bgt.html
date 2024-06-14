@@ -1,8 +1,5 @@
 {% extends 'main__/base.html' %}
 {% load static %}
-{% block style %}
-    <link type="text/css" rel="stylesheet" href="{% static "css/bgt/bgt.css" %}">
-{% endblock %}
 {% block domready %}
 {#        <script>#}
     document.getElementById('id_price').addEventListener('keyup', function (e) {
@@ -119,6 +116,88 @@
     {#    </script>#}
 {% endblock %}
 {% block title %}خرید{% endblock %}
+{% block style %}
+   <style>
+  /* General Styles */
+  body {
+    font-family: 'Arial', sans-serif;
+    direction: rtl; /* Added this line to set the text direction to right-to-left */
+    text-align: right; /* Added this line to align the text to the right */
+  }
+  body form{
+    margin: 2%;
+    padding: 2%;
+  }
+  body img{
+      width: 40%;
+      height: 40%;
+  }
+  /* Container Styles */
+  #buy_form_fields {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* Form Styles */
+  .pair {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+
+  .pair > div {
+    flex-basis: 48%;
+  }
+
+  label {
+    font-weight: bold;
+    margin-bottom: 5px;
+  }
+
+  input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  #submitt {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  /* Image Styles */
+  #img-preview {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 20px auto;
+  }
+  #buy_title{
+      text-align: center;
+      color: #007bff;
+  }
+
+  /* Responsive Styles */
+  @media (max-width: 767px) {
+    .pair {
+      flex-direction: column; /* Added this line to reverse the order of the form fields on smaller screens */
+    }
+
+    .pair > div {
+      flex-basis: auto;
+    }
+  }
+</style>
+
+{% endblock %}
 {% block content %}
     <h1 id="buy_title">{% if not edit %}خرید دارو{% else %}ویرایش خرید{% endif %}</h1>
     {% if edit %}
@@ -220,12 +299,7 @@
             {{ form.total }}
         </div>
     </div>
-    {% if edit %}
-        <input type="hidden" value="{{ instance.unique }}">
-        <input id="submitt" type="submit" value="ذخیره تغییرات">
-    {% else %}
-        <input id="submitt" type="submit" value="ثبت خرید">
-    {% endif %}
+
     <div id="photo">
         <label>
             عکس دارو:
@@ -237,6 +311,12 @@
             <input type="file" name="photo" accept="image/*" id="id_photo">
         {% endif %}
     </div>
+{% if edit %}
+        <input type="hidden" value="{{ instance.unique }}">
+        <input id="submitt" type="submit" value="ذخیره تغییرات">
+    {% else %}
+        <input id="submitt" type="submit" value="ثبت خرید">
+    {% endif %}
     {% csrf_token %}
 </div>
 </form>
