@@ -17,58 +17,54 @@ from django.urls import reverse
 from django.views.decorators.http import require_POST
 from .accessories import resize
 from main.forms import BgtForm, SldForm, BgtEditForm, SldEdit, DrugEditForm
-from main.models import Drug as Drg, Bgt, Sld
+from main.models import Drug as Drg, Bgt, Sld, BillSld, BillBgt
 from main.models import Bgt as Bg
 from django.db.backends.sqlite3.base import IntegrityError
 from django.db.models.signals import post_save
 
 
-def send_all_in_email(instance, request):
-    print("semi-signal was called in checkforpdf signal", request, "-------------", )
-    if request.session.get("CurrentCustomer") == instance.customer:
-        # if this sale's customer is the current customer, add the new sale object id to the session
-        if request.session.get(request.session.get("CurrentCustomer"), None):
-            request.session[request.session.get("CurrentCustomer")][instance.id] = instance.id
-        else:
-            # if it has no sales yet, the initialize it to avoid Dict Error
-            request.session['CurrentCustomer'] = instance.customer
-            request.session[request.session['CurrentCustomer']] = {instance.id: instance.id}
-    else:
-        # if the current customer in the session is different from the one  of the new sale object,
-        # it means the current customer is new and the previous sales should be sent via email and the new be initialiezed
-        if request.session.get(request.session.get("CurrentCustomer"), None):
-            # if the previous customer is not None, at least one sale had
-            current_cus_sales = Sld.objects.filter(id__in=request.session[request.session.get("CurrentCustomer")])
-            slds = current_cus_sales
-            # creating the pdf
-            html_str = render_to_string("sld/pdf_sld.html", {'slds': slds,"pdf":"ok"})
-            bytes_io = BytesIO()
+def send_sld_pdf_email(bill):
+    slds = bill.slds.all()
+    instance = bill
+    html_str = render_to_string("sld/pdf_sld.html", {'slds': slds, "pdf": "ok"})
+    bytes_io = BytesIO()
+    weasyprint.HTML(string=html_str).write_pdf(bytes_io, stylesheets=[
+        settings.STATIC_ROOT / "css/sld/pdf.css"
+    ])
+    print("pdf was created successfully")
+    # sending the email
+    mail = EmailMessage(instance.customer, f"{instance.customer}'s purchases from ahmadyar shop",
+                        settings.EMAIL_HOST_USER, ["aliahmadyar10@gmail.com"], )
+    mail.attach(f"{instance.customer}__{instance.number}.pdf",
+                bytes_io.getvalue(), "attachment/pdf")
 
-            weasyprint.HTML(string=html_str).write_pdf(bytes_io, stylesheets=[
-                settings.STATIC_ROOT / "css/sld/sld.css"
-            ])
-            print("pdf was created successfully")
-            # sending the email
-            mail = EmailMessage(instance.customer, f"{instance.customer}'s purchases from ahmadyar shop",
-                                settings.EMAIL_HOST_USER, ["aliahmadyar10@gmail.com"], )
-            mail.attach(f"{instance.customer}__{instance.id}.pdf",
-                        bytes_io.getvalue(), "attachment/pdf")
+    mail.send(fail_silently=False)
 
-            mail.send(fail_silently=False)
+    print("email was sent")
 
-            print("email was sent")
-            # reassigning the new customer bill to the session
-            request.session['CurrentCustomer'] = instance.customer
-            request.session[request.session['CurrentCustomer']] = {instance.id: instance.id}
-            print("reassignment was done successfully?")
-        else:
-            # if it has no sales yet, the initialize it to avoid Dict Error
-            request.session['CurrentCustomer'] = instance.customer
-            request.session[request.session['CurrentCustomer']] = {instance.id: instance.id}
+
+def send_bgt_pdf_email(bill):
+    bgts = bill.bgts.all()
+    instance = bill
+    html_str = render_to_string("bgt/pdf_bgt.html", {'bgts': bgts, "pdf": "ok"})
+    bytes_io = BytesIO()
+    weasyprint.HTML(string=html_str).write_pdf(bytes_io, stylesheets=[
+        settings.STATIC_ROOT / "css/bgt/pdf.css"
+    ])
+    print("pdf was created successfully")
+    # sending the email
+    mail = EmailMessage(instance.company, f"purchases from {instance.company}'s on {instance.date}",
+                        settings.EMAIL_HOST_USER, ["aliahmadyar10@gmail.com"], )
+    mail.attach(f"{instance.company}__{instance.number}.pdf",
+                bytes_io.getvalue(), "attachment/pdf")
+
+    mail.send(fail_silently=False)
+
+    print("email was sent")
+
 
 @login_required
 def main_page(request):
-
     drugs = Drg.objects.all().order_by('name')
     # print(drugs[0].photo.path,"---------------++++++++++++++")
     # making a paginator
@@ -86,10 +82,11 @@ def main_page(request):
         except PageNotAnInteger:
             page = paginated.page(1)
         if requested_page:
-            return render(request, "main__/portion_list.html", {"page": page,"home":"ok"})
+            return render(request, "main__/portion_list.html", {"page": page, "home": "ok"})
     else:
         page = paginated.page(1)
-        return render(request, 'main__/home.html', {'user': request.user, 'page': page,"home":"ok"})
+        return render(request, 'main__/home.html', {'user': request.user, 'page': page, "home": "ok"})
+
 
 @login_required
 def buy(request):
@@ -114,6 +111,31 @@ def buy(request):
                                           existing_amount=bgt.amount)
                 bgt.drug = drug
                 bgt.save()
+            existing_bill = BillBgt.objects.filter(number=bgt.bgt_bill)
+            print("this was the existing bill", existing_bill)
+            # setting the appropriate bill number for the sell object
+            new_bill = None
+            if len(existing_bill) > 0:
+                existing_bill[0].bgts.add(bgt)
+            else:
+                new_bill = BillBgt.objects.create(number=bgt.bgt_bill,
+                                                  company=bgt.company,
+                                                  date=bgt.date.strftime("%y/%m/%d"))
+                new_bill.bgts.add(bgt)
+                new_bill.save()
+            # sending
+            # check if there are previous bill not sent by email
+            not_sent = BillBgt.objects.filter(sent=False)
+            print(not_sent)
+            for bill in not_sent:
+                # discarding current item being added from being sent
+                if (len(existing_bill) > 0 and existing_bill[0].number == bill.number) or (
+                        new_bill and new_bill.number == bill.number):
+                    continue
+                send_bgt_pdf_email(bill)
+                print("bill was not sent")
+                bill.sent = True
+                bill.save()
             messages.success(request, "جزئیات خرید موفقانه ثبت گردید.")
             return render(request, 'bgt/bgt.html',
                           {'form': BgtForm(data=request.POST), "media_url": media_url, "drugs": drugs})
@@ -126,6 +148,7 @@ def buy(request):
         form = BgtForm()
     return render(request, 'bgt/bgt.html', {'form': form, 'drugs': drugs, "media_url": media_url})
 
+
 @login_required
 def all_drugs(request):
     """ sends the names of the drugs through fetch for select element"""
@@ -137,13 +160,13 @@ def all_drugs(request):
         return JsonResponse(companies,
                             safe=False)  # safe false because we are sending something rather than dict(list)
 
+
 @login_required
 def sell(request):
     media_url = request.build_absolute_uri("/media/drugs/")
     if request.method == "POST":
         """ save the image,  """
         form = SldForm(request.POST, request.FILES)
-
         if form.is_valid():
             sld_obj = form.save(commit=False)
             cd = form.cleaned_data
@@ -160,9 +183,32 @@ def sell(request):
             bgt.save()
             drug.save()
             sld_obj.save()
-            if not request.session.get(request.session.get("CurrentCustomer", None), None):
-                request.session["CurrentCustomer"] = sld_obj.customer
-            send_all_in_email(sld_obj, request)
+            existing_bill = BillSld.objects.filter(number=sld_obj.sld_bill)
+            print("this was the existing bill", existing_bill)
+            # setting the appropriate bill number for the sell object
+            new_bill = None
+            if len(existing_bill) > 0:
+                existing_bill[0].slds.add(sld_obj)
+            else:
+                new_bill = BillSld.objects.create(number=sld_obj.sld_bill,
+                                                  customer=sld_obj.customer,
+                                                  date=sld_obj.date.strftime("%y/%m/%d"))
+                new_bill.slds.add(sld_obj)
+                new_bill.save()
+            # sending
+            # check if there are previous bill not sent by email
+            not_sent = BillSld.objects.filter(sent=False)
+            print(not_sent)
+            for bill in not_sent:
+                # discarding current item being added from being sent
+                if (len(existing_bill) > 0 and existing_bill[0].number == bill.number) or (
+                        new_bill and new_bill.number == bill.number):
+                    continue
+                send_sld_pdf_email(bill)
+                print("bill was not sent")
+                bill.sent = True
+                bill.save()
+            # preparing drugs for next sld form
             drugs = [drug.name for drug in Drg.objects.all()]
             messages.success(request, "جزئیات فروش موفقانه ثبت گردید.")
             return render(request,
@@ -183,6 +229,7 @@ def sell(request):
         drugs = [drug.name for drug in Drg.objects.all()]
         return render(request, 'sld/sld.html', {'form': form, "media_url": media_url, 'drugs': drugs})
 
+
 @login_required
 def get_drug_bgts(request):
     """sends bgt details for sell template in bgt selector"""
@@ -192,12 +239,14 @@ def get_drug_bgts(request):
     bgts = [(drug.price, drug.baqi_amount, str(drug.date), drug.currency) for drug in bgts]
     return JsonResponse(bgts, safe=False)
 
+
 @login_required
 def get_drug_companies(request):
     drug_name = request.GET['drug_name']
     drug_name = drug_name.title()
     companies = [drug.company for drug in Drg.objects.filter(name=drug_name)]
     return JsonResponse(safe=False, data=companies)
+
 
 @login_required
 def set_sld_photo(request):
@@ -207,12 +256,14 @@ def set_sld_photo(request):
     drug = Drg.objects.get(name=name, company=company)
     return HttpResponse(drug.photo.url)
 
+
 @login_required
 def show_drug_detail(request, name, company):
     name = name.title()
     company = company.title()
     drug = Drg.objects.get(name=name, company=company)
     return render(request, "drug/drug_detail.html", {"drug": drug})
+
 
 @login_required
 def show_bgt_detail(request, name, company, date):
@@ -224,6 +275,7 @@ def show_bgt_detail(request, name, company, date):
     drug = Drg.objects.get(name=name, company=company)
     return render(request, "bgt/bgt_detail.html", {"bgt": bgt, "drug": drug})
 
+
 @login_required
 def show_sld_detail(request, name, company, date, customer):
     name = name.title()
@@ -232,6 +284,7 @@ def show_sld_detail(request, name, company, date, customer):
     sld = Sld.objects.get(unique=unique)
     drug = Drg.objects.get(name=name, company=sld.company)
     return render(request, "sld/sld_detail.html", {"sld": sld, "drug": drug})
+
 
 @login_required
 def edit_bgt(request, name, company, date):
@@ -266,6 +319,7 @@ def edit_bgt(request, name, company, date):
         edit_form = BgtEditForm(instance=instance)
         return render(request, "bgt/bgt.html", {'form': edit_form, "edit": "1", 'instance': instance})
 
+
 @login_required
 def edit_sld(request, name, company, date, customer):
     pre_unique = name + "&&" + company + "&&" + date + "&&" + customer
@@ -290,6 +344,7 @@ def edit_sld(request, name, company, date, customer):
         sld_edit_frm = SldEdit(instance=pre_sld)
         return render(request, "sld/sld.html", {"form": sld_edit_frm, "instance": pre_sld, "edit": "1"})
 
+
 @login_required
 def delete(request, name, company, date=None, customer=None):
     if customer:  # sld deletion
@@ -310,6 +365,7 @@ def delete(request, name, company, date=None, customer=None):
         Drg.objects.get(name=name, company=company).delete()
         return redirect("main:main")
 
+
 @login_required
 def show_list(request, list_type):
     data = request.GET
@@ -320,6 +376,7 @@ def show_list(request, list_type):
     else:
         slds = Sld.objects.all().order_by(type)
         return render(request, "sld/list.html", {'slds': slds})
+
 
 @login_required
 def show_specific(request, list_type):

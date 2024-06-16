@@ -1,6 +1,8 @@
-/*in man/* General Styles */
+/* General Styles */
 body {
   font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
   background-color: #f5f5f5;
   direction: rtl; /* Set the direction to right-to-left for Persian */
 }
@@ -96,20 +98,18 @@ body {
     padding-left: 10px; /* Set the padding-left for Persian */
     white-space: nowrap;
   }
-#list_table td:nth-of-type(1):before { content: "نام دارو"; }
+
+  #list_table td:nth-of-type(1):before { content: "نام دارو"; }
   #list_table td:nth-of-type(2):before { content: "کمپنی دارو"; }
-  #list_table td:nth-of-type(3):before { content: "مقدار فروش"; }
-  #list_table td:nth-of-type(4):before { content: "قیمت فروش"; }
+  #list_table td:nth-of-type(3):before { content: "مقدار خرید"; }
+  #list_table td:nth-of-type(4):before { content: "قیمت خرید"; }
   #list_table td:nth-of-type(5):before { content: "مجموع پول"; }
   #list_table td:nth-of-type(6):before { content: "واحد پول"; }
-  #list_table td:nth-of-type(7):before { content: "مشخصات خرید"; }
-  #list_table td:nth-of-type(8):before { content: "سود"; }
-  #list_table td:nth-of-type(9):before { content: "خریدار"; }
-  #list_table td:nth-of-type(10):before { content: "تاریخ فروش"; }
-  #list_table td:nth-of-type(11):before { content: "بیل نمبر"; }
-  #list_table td:nth-of-type(12):before { content: "حذف کردن"; }
+  #list_table td:nth-of-type(7):before { content: "تاریخ خرید"; }
+  #list_table td:nth-of-type(8):before { content: "بیل نمبر"; }
+  #list_table td:nth-of-type(9):before { content: "تعداد باقی"; }
 }
-@page {
-    size: landscape;
-    margin: 0;
+@page  {
+  size: landscape;
+  margin: 0;
 }

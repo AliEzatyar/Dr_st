@@ -17,8 +17,6 @@
             <th>واحد پول</th>
             <th><a href="{% url 'main:show_list' 'bgt' %}?sort_by=date">تاریخ خرید</a></th>
             <th><a href="{% url 'main:show_list' 'bgt' %}?sort_by=bgt_bill">بیل نمبر</a></th>
-            <th>تعداد باقی</th>
-            <th>حذف کردن</th>
 
         </tr>
         </thead>
@@ -33,20 +31,6 @@
                 <td>{{ bgt.currency }}</td>
                 <td>{{ bgt.date }}</td>
                 <td>{{ bgt.bgt_bill }}</td>
-                <td style="background-color: lightgoldenrodyellow">
-                    <form id="see_bgts" method="get" action="{% url 'main:show_specific' 'sld' %}">
-                        <input type="hidden" value="{{ bgt.name }}&&{{ bgt.company }}" name="data">
-                        <input type="submit" value="{{ bgt.baqi_amount|floatformat:0 }}/{{ bgt.amount|floatformat:0 }}">
-                    </form>
-
-                </td>
-                <td>
-                    <form id="delete_form" method="post"
-                          action="{% url 'main:delete_bgt' bgt.name bgt.company bgt.date %}">
-                        <input style="color: white" type="submit" value="حذف">
-                        {% csrf_token %}
-                    </form>
-                </td>
             </tr>
         {% endfor %}
         </tbody>
